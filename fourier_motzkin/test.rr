@@ -1,0 +1,65 @@
+def fourier_motzkin(A,Z,K) {
+
+  M = length(Z);
+  D = length(A[0]);
+
+  Ak = [];
+  Zk = [];
+  Ck = [];
+
+  for(I = 0; I < length(A); I++) {
+    if(A[I][K] == 0) {
+      Ak = append(Ak, [A[I]]);
+      Zk = append(Zk, [Z[I]]);
+      for(J = 0; J < length(A); J++) {
+	if(J == I) {
+	  Ck = append(Ck, [1]);
+	}
+	else {
+	  Ck = append(Ck, [0]);
+	}
+      }
+    }
+    
+    for(J = 0; J < length(A); J++) {
+      TEMPA = [];
+      TEMPZ = 0;
+      if(A[I][K] > 0 && A[J][K] < 0) {
+	for(L = 0; L < D; L++) {
+	  TEMPA = append(TEMPA, [A[I][K]*A[J][L] - A[J][K]*A[I][L]]);
+	  TEMPZ = A[I][K]*Z[J] - A[J][K]*Z[I];
+	}
+	Ak = append(Ak, [TEMPA]);
+	Zk = append(Zk, [TEMPZ]);
+      }
+    }
+  }
+
+  R = [];
+  R = append(R, [Ak]);
+  R = append(R, [Zk]);
+
+  return(R);
+}
+/*
+A = [[-1,-4],
+     [-2,-1],
+     [1,-2],
+     [1,0],
+     [2,1],
+     [-2,6],
+     [-6,-1]];
+
+Z = [-9,-4,0,4,11,17,-6];
+
+K = 0;
+
+R = fourier_motzkin(A,Z,K);
+print("");
+print("A/k = ",0)$
+print(R[0])$
+print("Z/k = ",0)$
+print(R[1])$
+*/
+
+end$

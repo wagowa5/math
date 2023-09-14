@@ -1,0 +1,11 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(void)
+{
+  int a;
+
+  a = system("asir | import\(\"test.rr\"\)");
+
+  return 0;
+}

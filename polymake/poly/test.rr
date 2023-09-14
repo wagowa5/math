@@ -1,0 +1,386 @@
+#define SPACE 0x20
+#define CodeOfA 0x41
+#define CodeOfZ 0x5a
+#define CodeOfa 0x61
+#define CodeOfz 0x7a
+#define CodeOf0 0x30
+#define CodeOf9 0x39
+//#define CodeOfPlus  0x2b
+//#define CodeOfMinus 0x2d
+//#define CodeOfMult  0x2a
+//#define CodeOfDiv   0x2f
+//#define CodeOfLeftBracket  0x28
+//#define CodeOfRightBracket  0x29
+
+#define LF 0x0a
+
+//#define VARIABLE 1
+//#define NUMBER 2
+
+#define VERTICES 1
+#define NUMBER 2
+
+
+extern Ch, Value, Sy, Ptr, Str;
+//Ch = 0x20$
+//Sy = 0$
+//Value = 0$
+//Ptr = -1$
+//MyResult = ""$
+def input_vertices(FILENAME) {
+  print("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+  
+  Sy = 0;
+  
+  Fd = open_file(FILENAME, "r");
+  Result = [];
+
+  SS = [];
+  print("aaaaaaaaaaaaaaaaaa");
+  while(1) {
+    S = get_line(Fd);
+    if(S == 0) {
+      break;
+    }
+    SS = append(SS, [S]);
+  }
+  print("ssssssssssssssss");
+  print(SS);
+
+  FFF = 0;
+  for(I = 0; I < length(SS); I++) {
+    Sy = 0;
+    Str = strtoascii(SS[I]);
+    print(Str);
+    T = parse();
+    print(T);
+    print("Symbol");
+    print(Sy);
+    if(Sy == VERTICES) {
+      FFF = 1;
+    }
+    else if((Sy == NUMBER) && (FFF == 1)) {
+      Result = append(Result,[T]);
+      print("Result-----------");
+      print(Result);
+    }
+    else {
+      print("error");
+      break;
+    }
+  }
+
+  close_file(Fd);
+
+  return Result;
+}
+
+def is_space(C) {
+  if(C == SPACE) return 1;
+  else return 0;
+}
+
+def is_alpha(C) {
+  if((C >= CodeOfA) && (C <= CodeOfZ)) return 1;
+  if((C >= CodeOfa) && (C <= CodeOfz)) return 1;
+  return 0;
+}
+
+def is_digit(C) {
+  if((C >= CodeOf0) && (C <= CodeOf9)) return 1;
+  return 0;
+}
+
+def is_lf(C) {
+  if(C == LF) return 1;
+  return 0;
+}
+
+def getch() {
+  //extern Str,Ptr;
+  if(Ptr >= length(Str)-1) return -1;
+  else {
+    Ptr++;
+    return Str[Ptr];
+  }
+}
+
+def parse() {
+  //extern Ptr;
+  Ptr = -1;
+  Count = 0;
+  //Temp = [];
+  //Temp2 = [];
+  Ch = getch();
+  while(1) {
+    //print("parse--------------------");
+    //print(Ch);
+    while(is_space(Ch)) {
+      Ch = getch();
+    }
+    
+    if(is_alpha(Ch)) {
+      Temp2 = [];
+      while(is_lf(Ch) != 1) {
+	Temp2 = append(Temp2, [Ch]);
+	Ch = getch();
+      }
+      Temp = asciitostr(Temp2);
+      if(Temp == "VERTICES") {
+	Sy = VERTICES;
+      }
+      break;
+    }  
+    if(is_digit(Ch)) {
+      Value = 0;
+      Count++;
+      if(Sy != NUMBER) {
+	Temp = [];
+      }
+      Sy = NUMBER;
+      do {
+	Value = Value*10 + (Ch-CodeOf0);
+	Ch = getch();
+      }while(is_digit(Ch));
+      if(Count > 1) {
+	Temp = append(Temp, [Value]);
+      }
+    } else {
+      Ch = getch();
+    }
+
+    if((is_lf(Ch)) || (Ch == -1)) {
+      Ptr = -1;
+      break;
+    }
+    
+  }
+  
+  return Temp;
+}
+
+
+
+def make_combination(N, D) {
+  S = [];
+
+  for(I = 0; I < 2^N; I++) {
+    INDEX = [];
+    F = 0;
+    
+    II = I;
+    for(J = N-1; J > 0; J--) {
+      F = F + idiv(II,2^J);
+      INDEX = append(INDEX, [idiv(II,2^J)]);
+      II = II - (2^J)*idiv(II,2^J);
+    }
+    F = F + II%2;
+    INDEX = append(INDEX, [II%2]);
+    
+    //print(INDEX);
+    if(F == D) {
+      SS = [];
+      for(J = 0; J < length(INDEX); J++) {
+	if(INDEX[J] == 1) {
+	  SS = append(SS, [J]);
+	}
+      }
+      S = append(S, [SS]);
+    }
+  }
+
+  return S;
+}
+
+def make_hsp(A, N) {
+  H = [];
+
+  SELECT = make_combination(length(A),N);
+  //print("select",0);
+  print(SELECT);
+
+  for(I = 0; I < length(SELECT); I++) {
+    R = [];
+    Q = [];
+     
+    for(J = 0; J < N; J++) {
+      //print("A");
+      //print(SELECT[I]);
+      TEMP = [1];
+      TEMP = append(TEMP, A[SELECT[I][J]]);
+      R = append(R, [TEMP]);
+      Q = append(Q, [0]);
+    }
+    print(R);
+    
+    if(matrix_rank(R) == length(R)) {
+      //print("一次独立");
+      F = 0;
+      V = [];
+      for(K = 0; K < N+1; K++) {
+	if(K == 0) {
+	  F = F + util_v(a,[K]);
+	}
+	else {
+	  F = F + util_v(a,[K]) * util_v(x,[K]);
+	}
+	V = append(V, [util_v(a,[K])]);
+      }
+      //print(F1);
+      S = matrix_solve_linear(R, V, Q);
+      print(S);
+      print(S);
+      for(K = 0; K < N+1; K++) {
+	F = base_replace(F, [[util_v(a,[K]),S[K][1]]]);
+      }
+      for(K = 0; K < N+1; K++) {
+	F = base_replace(F, [[util_v(a,[K]),1]]);
+      }
+      
+      B = 0;
+      for(K = 0; K < length(H); K++) {
+	if(F == H[K]) {
+	  B = 1;
+	  break;
+	}
+      }
+      if(B == 0) {
+	H = append(H, [F]);
+      }
+      else {
+	break;
+      }
+    }
+    
+    else {
+      print("一次独立でない");
+    }
+  }
+  
+  return H;
+}
+
+def check_hsp(A, H, N) {
+  INEQ = [];
+  POLY_INEQ = [];
+  
+  for(I = 0; I < length(H); I++) {
+    F = 0;
+    G = 0;
+    for(J = 0; J < length(A); J++) {
+      P = H[I];
+      for(K = 1; K < N+1; K++) {
+	P = base_replace(P,[[util_v(x,[K]),A[J][K-1]]]);
+      }
+      
+      if(P >= 0) {
+	F++;
+      }
+      if(P <= 0) {
+	G++;
+      }
+    }
+    
+    if(F >= length(A)) {
+      P = H[I];
+      PP = H[I];
+      for(K = 1; K < N+1; K++) {
+	PP = base_replace(PP,[[util_v(x,[K]),0]]);
+      }
+      TEMP = [PP];
+      for(K = 1; K < N+1; K++) {
+	TEMP = append(TEMP, [coef(P,1,util_v(x,[K]))]);
+      }
+      POLY_INEQ = append(POLY_INEQ, [TEMP]);
+      INEQ = append(INEQ,[1]);
+    }
+    else if(G >= length(A)) {
+      P = H[I];
+      PP = H[I];
+      for(K = 0; K < N+2; K++) {
+	PP = base_replace(PP,[[util_v(x,[K]),0]]);
+      }
+      TEMP = [PP];
+      for(K = 1; K < N+1; K++) {
+	TEMP = append(TEMP, [(-1)*coef(P,1,util_v(x,[K]))]);
+      }
+      POLY_INEQ = append(POLY_INEQ, [TEMP]);
+      INEQ = append(INEQ,[-1]);
+    }
+    else {
+      INEQ = append(INEQ,[0]);
+    }
+    
+  }
+
+  RESULT = [INEQ,POLY_INEQ];
+
+  return RESULT;
+}
+
+def display_hsp(H, INEQ) {
+
+  for(I = 0; I < length(H); I++) {
+    if(INEQ[I] > 0) {
+      print(H[I], 0)$
+	print(">=0");   
+    }
+    if(INEQ[I] < 0) {
+      print(H[I], 0)$
+	print("<=0");   
+    }
+    
+  }
+  
+}
+
+def check_ineq() {
+
+}
+
+def output_polymake(POLY_INEQ, FILENAME) {
+  //Fd = open_file("ineq_test.p","w");
+  Fd = open_file(FILENAME,"w");
+
+  fprintf(Fd,"INEQUALITIES\n");
+  for(I = 0; I < length(POLY_INEQ); I++) {
+    STR = "";
+    for(J = 0; J < length(POLY_INEQ[I])-1; J++) {
+      STR = STR + rtostr(POLY_INEQ[I][J]);
+      STR = STR + " ";
+    }
+    STR = STR + rtostr(POLY_INEQ[I][J]);
+    fprintf(Fd,"%a\n",STR);
+  }
+
+  close_file(Fd);
+}
+
+/* メイン処理 */
+A = [[1,1,1],[1,2,4],[3,4,1]]; // coneの生成元
+H = [];
+INEQ = [];
+Dim = length(A[0]);
+FILENAME = "input_test.p";
+//extern POLY_INEQ = [];
+
+A = input_vertices(FILENAME);
+Dim = length(A[0]);
+print(A);
+
+// 2点と原点を通るhalf spaceを作成
+H = make_hsp(A, Dim);
+print(H);
+
+// coneを含むhalf spaceとその不等号のcheck
+TEMP = check_hsp(A,H,Dim);
+print(H);
+print(TEMP);
+
+FILENAME = "ineq_test.p";
+output_polymake(TEMP[1],FILENAME);
+
+// half spaceの表示
+display_hsp(H, TEMP[0]);
+
+end$

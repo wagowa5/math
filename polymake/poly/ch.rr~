@@ -1,0 +1,21 @@
+import("test.rr");
+
+Id = open_file("chk.txt");
+
+N = eval_str(get_line(Id));
+
+for(I = 0; I < N; I++) {
+  A = eval_str(get_line(Id));
+  Dim = length(A[0]);
+  
+  // 2点と原点を通るhalf spaceを作成
+  H = make_hsp(A, Dim);
+  print(H);
+  
+  // coneを含むhalf spaceとその不等号の決定
+  INEQ = check_hsp(A,H,Dim);
+  //print(INEQ);
+  
+  // half spaceの表示
+  display_hsp(H, INEQ);
+}

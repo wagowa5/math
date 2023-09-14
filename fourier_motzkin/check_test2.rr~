@@ -1,0 +1,6 @@
+Id = open_file("ch.txt");
+
+print(get_line(Id));
+print(get_line(Id));
+
+end$

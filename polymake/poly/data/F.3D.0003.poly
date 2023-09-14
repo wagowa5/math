@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?pm chk="00001731"?>
+
+<object name="F.3D.0003" type="polytope::LatticePolytope" version="2.12.1" xmlns="http://www.math.tu-berlin.de/polymake/#3">
+  <credit product="cddlib"><![CDATA[
+Copyright by Komei Fukuda.
+http://www.ifor.math.ethz.ch/~fukuda/cdd_home/cdd.html
+]]></credit>
+  <credit product="barvinok"><![CDATA[ barvinok is a library to compute with integral points in parametric polytopes
+ written by Sven Verdoolaege
+ http://freshmeat.net/projects/barvinok
+]]></credit>
+  <property name="INEQUALITIES">
+    <m>
+      <v>1 -1 1 1</v>
+      <v>1 -1 0 0</v>
+      <v>1 -1 0 1</v>
+      <v>1 0 -1 0</v>
+      <v>1 0 0 1</v>
+      <v>1 0 0 -1</v>
+      <v>1 1 0 0</v>
+      <v>1 1 0 -1</v>
+      <v>1 0 0 0</v>
+    </m>
+  </property>
+  <property name="VERTICES">
+    <m>
+      <v>1 0 -2 1</v>
+      <v>1 0 1 1</v>
+      <v>1 1 1 0</v>
+      <v>1 1 0 0</v>
+      <v>1 1 -1 1</v>
+      <v>1 1 1 1</v>
+      <v>1 0 0 -1</v>
+      <v>1 0 1 -1</v>
+      <v>1 -1 1 -1</v>
+      <v>1 -1 -1 -1</v>
+      <v>1 -1 -2 0</v>
+      <v>1 -1 1 0</v>
+    </m>
+  </property>
+  <property name="POINTED" value="true" />
+  <property name="FEASIBLE" value="true" />
+  <property name="LINEALITY_DIM" value="0" />
+  <property name="FAR_FACE">
+    <v />
+  </property>
+  <property name="VERTICES_IN_FACETS">
+    <m cols="12">
+      <v>0 3 4 6 9 10</v>
+      <v>2 3 4 5</v>
+      <v>2 3 6 7</v>
+      <v>1 2 5 7 8 11</v>
+      <v>6 7 8 9</v>
+      <v>0 1 4 5</v>
+      <v>8 9 10 11</v>
+      <v>0 1 10 11</v>
+    </m>
+  </property>
+  <property name="FACETS">
+    <m>
+      <v>1 -1 1 1</v>
+      <v>1 -1 0 0</v>
+      <v>1 -1 0 1</v>
+      <v>1 0 -1 0</v>
+      <v>1 0 0 1</v>
+      <v>1 0 0 -1</v>
+      <v>1 1 0 0</v>
+      <v>1 1 0 -1</v>
+    </m>
+  </property>
+  <property name="AFFINE_HULL">
+    <m />
+  </property>
+  <property name="GRAPH">
+    <object>
+      <property name="ADJACENCY">
+        <m>
+          <v>1 4 10</v>
+          <v>0 5 11</v>
+          <v>3 5 7</v>
+          <v>2 4 6</v>
+          <v>0 3 5</v>
+          <v>1 2 4</v>
+          <v>3 7 9</v>
+          <v>2 6 8</v>
+          <v>7 9 11</v>
+          <v>6 8 10</v>
+          <v>0 9 11</v>
+          <v>1 8 10</v>
+        </m>
+      </property>
+    </object>
+  </property>
+  <property name="N_VERTICES" value="12" />
+  <property name="N_FACETS" value="8" />
+  <property name="LATTICE" value="true" />
+  <property name="CONE_AMBIENT_DIM" value="4" />
+  <property name="CONE_DIM" value="4" />
+  <property name="FACET_WIDTHS">
+    <v>3 2 2 3 2 2 2 2</v>
+  </property>
+  <property name="FACET_WIDTH" value="3" />
+  <property name="COMPRESSED" value="false" />
+  <property name="DUAL_GRAPH">
+    <object>
+      <property name="ADJACENCY">
+        <m>
+          <v>1 2 4 5 6 7</v>
+          <v>0 2 3 5</v>
+          <v>0 1 3 4</v>
+          <v>1 2 4 5 6 7</v>
+          <v>0 2 3 6</v>
+          <v>0 1 3 7</v>
+          <v>0 3 4 7</v>
+          <v>0 3 5 6</v>
+        </m>
+      </property>
+    </object>
+  </property>
+  <property name="ESSENTIALLY_GENERIC" value="false" />
+  <property name="CENTROID">
+    <v>1 -5/72 -5/72 5/72</v>
+  </property>
+  <property name="VOLUME" value="6" />
+  <property name="HASSE_DIAGRAM">
+    <object>
+      <property name="ADJACENCY">
+        <m cols="40">
+          <v />
+          <v>0</v>
+          <v>0</v>
+          <v>0</v>
+          <v>0</v>
+          <v>0</v>
+          <v>0</v>
+          <v>0</v>
+          <v>0</v>
+          <v>1 2</v>
+          <v>1 3</v>
+          <v>1 5</v>
+          <v>1 6</v>
+          <v>1 7</v>
+          <v>1 8</v>
+          <v>2 3</v>
+          <v>2 4</v>
+          <v>2 6</v>
+          <v>3 4</v>
+          <v>3 5</v>
+          <v>4 5</v>
+          <v>4 6</v>
+          <v>4 7</v>
+          <v>4 8</v>
+          <v>5 7</v>
+          <v>6 8</v>
+          <v>7 8</v>
+          <v>12 14 25</v>
+          <v>21 23 25</v>
+          <v>15 16 18</v>
+          <v>9 10 15</v>
+          <v>9 12 17</v>
+          <v>16 17 21</v>
+          <v>10 11 19</v>
+          <v>18 19 20</v>
+          <v>20 22 24</v>
+          <v>11 13 24</v>
+          <v>13 14 26</v>
+          <v>22 23 26</v>
+          <v>27 28 29 30 31 32 33 34 35 36 37 38</v>
+        </m>
+      </property>
+      <property name="FACES">
+        <m>
+          <v>0 1 2 3 4 5 6 7 8 9 10 11</v>
+          <v>0 3 4 6 9 10</v>
+          <v>2 3 4 5</v>
+          <v>2 3 6 7</v>
+          <v>1 2 5 7 8 11</v>
+          <v>6 7 8 9</v>
+          <v>0 1 4 5</v>
+          <v>8 9 10 11</v>
+          <v>0 1 10 11</v>
+          <v>3 4</v>
+          <v>3 6</v>
+          <v>6 9</v>
+          <v>0 4</v>
+          <v>9 10</v>
+          <v>0 10</v>
+          <v>2 3</v>
+          <v>2 5</v>
+          <v>4 5</v>
+          <v>2 7</v>
+          <v>6 7</v>
+          <v>7 8</v>
+          <v>1 5</v>
+          <v>8 11</v>
+          <v>1 11</v>
+          <v>8 9</v>
+          <v>0 1</v>
+          <v>10 11</v>
+          <v>0</v>
+          <v>1</v>
+          <v>2</v>
+          <v>3</v>
+          <v>4</v>
+          <v>5</v>
+          <v>6</v>
+          <v>7</v>
+          <v>8</v>
+          <v>9</v>
+          <v>10</v>
+          <v>11</v>
+          <v />
+        </m>
+      </property>
+      <property name="DIMS">
+        <v>1 9 27 39</v>
+      </property>
+    </object>
+  </property>
+  <property name="F_VECTOR">
+    <v>12 18 8</v>
+  </property>
+  <property name="EHRHART_POLYNOMIAL_COEFF">
+    <v>1 5 9 6</v>
+  </property>
+  <property name="TRIANGULATION">
+    <object>
+      <property name="FACETS">
+        <m>
+          <v>0 1 2 4</v>
+          <v>0 2 3 4</v>
+          <v>1 2 4 5</v>
+          <v>0 2 3 6</v>
+          <v>0 1 2 6</v>
+          <v>1 2 6 7</v>
+          <v>0 1 6 8</v>
+          <v>1 6 7 8</v>
+          <v>0 6 8 9</v>
+          <v>0 1 8 10</v>
+          <v>0 8 9 10</v>
+          <v>1 8 10 11</v>
+        </m>
+      </property>
+    </object>
+  </property>
+  <property name="LINEALITY_SPACE">
+    <m />
+  </property>
+</object>

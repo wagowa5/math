@@ -1,0 +1,147 @@
+#define SPACE 0x20
+#define CodeOfA 0x41
+#define CodeOfZ 0x5a
+#define CodeOfa 0x61
+#define CodeOfz 0x7a
+#define CodeOf0 0x30
+#define CodeOf9 0x39
+#define CodeOfPlus  0x2b
+#define CodeOfMinus 0x2d
+#define CodeOfMult  0x2a
+#define CodeOfDiv   0x2f
+#define CodeOfLeftBracket  0x28
+#define CodeOfRightBracket  0x29
+#define CodeOfLeftB  0x3c
+#define CodeOfRightB  0x3e
+#define CodeOfSlash  0x2f
+#define CodeOfQuart 0x3d
+
+#define LF 0x0a
+
+//#define VARIABLE 1
+//#define NUMBER 2
+
+#define PROPERTY 1
+#define M 2
+#define V 3
+
+#define VERTICES 1
+#define NUMBER 2
+
+extern Ch, Value, Sy1, Sy2, Ptr, Str;
+
+
+def is_space(C) {
+  if(C == SPACE) return 1;
+  else return 0;
+}
+
+def is_leftb(C) {
+  if(C == CodeOfLeftB) return 1;
+  return 0;
+}
+
+def is_rightb(C) {
+  if(C == CodeOfRightB) return 1;
+  return 0;
+}
+
+
+def is_alpha(C) {
+  if((C >= CodeOfA) && (C <= CodeOfZ)) return 1;
+  if((C >= CodeOfa) && (C <= CodeOfz)) return 1;
+  return 0;
+}
+
+def is_digit(C) {
+  if((C >= CodeOf0) && (C <= CodeOf9)) return 1;
+  return 0;
+}
+
+def is_quart(C) {
+  if(C == CodeOfQuart) return 1;
+  return 0;
+}
+
+def is_lf(C) {
+  if(C == LF) return 1;
+  return 0;
+}
+
+def getch() {
+  //extern Str,Ptr;
+  if(Ptr >= length(Str)-1) return -1;
+  else {
+    Ptr++;
+    return Str[Ptr];
+  }
+}
+
+def parse() {
+  Ptr = -1;
+  Ch = getch();
+
+  while(Ch != -1) {
+    while(is_space(Ch)) {
+      Ch = getch();
+    }
+
+    if(is_leftb(Ch)) {
+      parse_b();
+    }
+
+    if(Sy1 == PROPERTY) {
+      
+      
+    }
+
+  }
+  
+}
+
+def parse_b() {
+  Buf1 = [];
+  Ch = getch();
+  while(is_rightb(Ch) != 1) {
+    if(is_alpha(Ch)) {
+      Buf1 = append(Buf1, [Ch]);
+      if(asciitostr(Buf1) == "property") {
+	Sy1 = PROPERTY;
+      }
+      
+      if(asciitostr(Buf1) == "m") {
+	Sy1 = M;
+      }
+
+      if(asciitostr(Buf1) == "v") {
+	Sy1 = V;
+      }
+    }
+
+    if(is_quart(Ch)) {
+      parse_q();
+    }
+    
+    Ch = getch();
+  }
+
+}
+
+def parse_q() {
+  Buf2 = [];
+  Ch = getch();
+  while(is_quart(Ch) != 0) {
+    if(is_alpha(Ch)) {
+      Buf2 = append(Buf2, [Ch]);
+    }
+    Ch = getch();
+  }
+
+  if(asciitostr(Buf2) == "VERTICES") {
+    Sy2 = VERTICES;
+  }
+  //if(asciitostr(Buf2) == "INEQUALITIES") {
+  //  Sy2 = INEQUALITIES;
+  //}
+  
+}

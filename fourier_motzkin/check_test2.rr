@@ -1,0 +1,36 @@
+import("test.rr");
+
+Id = open_file("ch.txt");
+
+//print(get_line(Id));
+//print(get_line(Id));
+for(I = 0; I < 2; I++) {
+  A = eval_str(get_line(Id));
+  Z = eval_str(get_line(Id));
+  K = eval_str(get_line(Id));
+  R = fourier_motzkin(A,Z,K);
+  print("");
+  print("A/k = ",0)$
+  print(R[0])$
+  print("Z/k = ",0)$
+  print(R[1])$
+}
+
+//print("abajdbsaifghurhalgnsfaghsrle");
+//print(eval_str(A)[0]);
+/*
+R = fourier_motzkin(A,Z,K);
+print("");
+print("A/k = ",0)$
+print(R[0])$
+print("Z/k = ",0)$
+print(R[1])$
+*/
+
+//S = eval(A[0]);
+//print(S[0]);
+// R = fourier_motzkin(A,Z,K);
+// print("aaaaaaaaaaaaaaaaaa");
+// print(R);
+
+end$

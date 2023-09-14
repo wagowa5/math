@@ -1,0 +1,33 @@
+def make_combination(N, D) {
+  S = [];
+  
+  for(I = 0; I < 2^N; I++) {
+    INDEX = [];
+    F = 0;
+    
+    II = I;
+    for(J = N-1; J > 0; J--) {
+      F = F + idiv(II,2^J);
+      INDEX = append(INDEX, [idiv(II,2^J)]);
+      II = II - 2^idiv(II,2^J);
+    }
+    F = II%2;
+    INDEX = append(INDEX, [F]);
+    II = II - F;
+    
+    print(INDEX);
+    if(F == D-1) {
+      S = append(S, [INDEX]);
+    }
+  }
+
+  return S;
+}
+
+S = [];
+S = make_combination(4,3);
+print("aaaaaaaaaa");
+print(S);
+
+
+end$
