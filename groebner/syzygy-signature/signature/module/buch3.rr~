@@ -1,0 +1,259 @@
+def spolynomial(F,G) {
+    DF = multi_degree(F);
+    DG = multi_degree(G);
+
+    F_VEC = newvect(length(F));
+    G_VEC = newvect(length(G));
+    for(I = 0; I < length(F); I++) {
+        F_VEC[I] = F[I];
+        G_VEC[I] = G[I];
+    }
+
+    if(DF[0][1] != DG[0][1]) {
+        return 0;
+    }
+
+    Mx = DF[0][0]>DG[0][0]?DF[0][0]:DG[0][0];
+    My = DF[1][0]>DG[1][0]?DF[1][0]:DG[1][0];
+    Mz = DF[2][0]>DG[2][0]?DF[2][0]:DG[2][0];
+    
+    //CC = [x^(Mx-DF[0])*y^(My-DF[1])*z^(Mz-DF[2])/DF[3], -x^(Mx-DG[0])*y^(My-DG[1])*z^(Mz-DG[2])/DG[3]];
+
+    Spoly = x^(Mx-DF[0][0])*y^(My-DF[1][0])*z^(Mz-DF[2][0])*F_VEC/DF[3][0]-x^(Mx-DG[0][0])*y^(My-DG[1][0])*z^(Mz-DG[2][0])*G_VEC/DG[3][0];
+    S = [];
+    for(I = 0; I < length(Spoly); I++) {
+        S = append(S, [Spoly[I]]);
+    }
+    return S;
+    //return [x^(Mx-DF[0])*y^(My-DF[1])*z^(Mz-DF[2])*F/DF[3]-x^(Mx-DG[0])*y^(My-DG[1])*z^(Mz-DG[2])*G/DG[3], CC];
+}
+
+def buchberger(F) {
+    N = length(F);
+    Pairs = [];
+    
+    for ( I = N-1; I >= 0; I-- ) {
+        for ( J = N-1; J > I; J-- ) {
+            Pairs = cons([I,J],Pairs);
+        }
+    }
+    
+    G = F;
+
+    //NEWC = [];
+    Zero_vect = [];
+    for(I = 0; I < length(F[0]); I++) {
+        Zero_vect = append(Zero_vect, [0]);
+    }
+    while ( Pairs != [] ) {
+        P = car(Pairs);
+        Pairs = cdr(Pairs);
+        //print(G[P[0]]);
+        //print(G[P[1]]);
+        Sp = spolynomial(G[P[0]],G[P[1]]);
+        print(Sp);
+        //Rem = reduction2(Sp[0],G);
+        if(Sp == 0) {
+            Rem = Zero_vect;
+        } else {
+            Rem = reduction2(Sp,G);
+            print(Rem);
+        }
+        if ( Rem != Zero_vect ) {
+            // 行列の初期化
+            //CCC = [];
+            /*
+            for ( I = 0; I < N+CNT; I++ ) {
+                CC = [];
+                for ( J = 0; J < N+CNT; J++ ) {
+                    if (I == J) {
+                        CC = append(CC, [1]);
+                    }
+                    else {
+                        CC = append(CC, [0]);
+                    }
+                }
+                CCC = append(CCC, [CC]);
+            }
+            */
+
+
+            // 新しい行の作成
+            /*
+            CC = [];
+            for ( I = 0; I < length(G); I++ ) {
+                if(I == P[0]) {
+                    CC = append(CC, [Sp[1][0] - Rem[0][I]]);
+                }
+                else if (I == P[1]) {
+                        CC = append(CC, [Sp[1][1] - Rem[0][I]]);
+                }
+                else {
+                    CC = append(CC, [(-1) * Rem[0][I]]);
+                }
+            }
+            CCC = append(CCC, [CC]);
+            */
+            // 行列の決定
+            /*
+            if (length(G) == length(F)) {
+                NEWC = matrix_list_to_matrix(CCC);
+                //NEWC = ltov(CCC);
+            }
+            else {
+                NEWC = matrix_list_to_matrix(CCC) * NEWC;
+                //TEMP = ltov(CCC);
+                //print(TEMP);
+                //print(ltov(TEMP[0]));
+                //print(NEWC);
+                //NEWC = TEMP * NEWC;
+            }
+            */
+
+            // Gの更新
+            G = append(G,[Rem]);
+            print(G);
+            //print(C);
+            for ( I = 0; I < N; I++ ) {
+                Pairs = cons([I,N],Pairs);
+            }
+            N++;
+        }
+    }
+    
+    //C = matrix_matrix_to_list(NEWC);
+    // C = vtol(NEWC);
+    //return [G, C];
+    return G;
+}
+
+//def minimal(G, C) {
+def minimal(G) {
+    N = length(G);
+    
+    MG = [];
+    //CC = [];
+    for(I = 0; I < N; I++) {
+        GG = [];
+        for(J = 0; J < N; J++) {
+            if(I != J) {
+                PP = pot(G[J]);
+                GG = append(GG, [PP[0]]);
+            }
+        }
+        
+        GGG = [];
+        for(K = 0; K < length(GG); K++) {
+            GG1 = [];
+            for(L = 0; L < length(GG[K][1]); L++) {
+                GG1 = append(GG1, [GG[K][0]*GG[K][1][L]]);
+            }
+            GGG = append(GGG, [GG1]);
+        }
+                
+
+        PP = pot(G[I]);
+        print(PP);
+        
+        PPP = [];
+        for(K = 0; K < length(PP[0][1]); K++) {
+            PPP = append(PPP, [PP[0][0]*PP[0][1][K]]);
+        }
+        print(PPP);
+        print(GGG);
+        
+        RR = reduction2(PPP,GGG);
+        //if(RR[1] != 0) {
+        if(RR != 0) {
+            MG = append(MG, [G[I]]);
+            //CC = append(CC, [C[I]]);
+        }
+    }
+
+    return MG;
+    //return [MG, CC];
+}
+
+def reduce(G, C) {
+    MG = minimal(G, C);
+    N = length(MG[0]);
+
+    MG2 = [];
+    CC = [];
+    for(I = 0; I < N; I++) {
+        CCC = newvect(N);
+        PPP = in2(MG[0][I]);
+        MG2 = append(MG2, [MG[0][I]/PPP[1]]);
+        for(J = 0; J < N; J++) {
+            if(I == J) {
+                CCC[I] = 1/PPP[1];
+            }
+        }
+        CC = append(CC, [matrix_matrix_to_list(CCC)]);
+    }
+
+    C2 = matrix_list_to_matrix(CC);
+
+    RG = [];
+    CC = [];
+    for(I = 0; I < N; I++) {
+        CCC = newvect(N);
+        for(J = 0; J < N; J++) {
+            if(I == J) {
+                CCC[I] = 1;
+            }
+        }
+        PPP = MG2[I];
+        NEWP = 0;
+
+        while(PPP != 0) {
+            INP = in2(PPP);
+            for(J = 0; J < N; J++) {
+                if(I == J) {
+                    J = J + 1;
+                }
+                if(J >= N) {
+                    break;
+                }
+
+                INQ = in2(MG2[J]);
+                JUDGE = is_reducible(INP[0],INQ[0]);
+                if(JUDGE != 0) {
+                    PPP = PPP - JUDGE*MG2[J];
+                    for(K = 0; K < N; K++) {
+                        if(K == J) {
+                            CCC[J] = CCC[J] - JUDGE;
+                        }
+                        /*
+                        else {
+                            CCC = append(CCC, [0]);
+                        }
+                        */
+                    }
+                    break;
+                }
+                else {
+                    if(J >= N-1 || (J >= N-2 && I >= N-1)) {
+                        NEWP = NEWP + INP[0];
+                        PPP = PPP - INP[0];
+                        break;
+                    }
+                }
+            }
+        }
+
+        CC = append(CC, [matrix_matrix_to_list(CCC)]);
+        
+        RG = append(RG, [NEWP]);
+    }
+
+    C1 = matrix_list_to_matrix(CC);
+    C3 = matrix_list_to_matrix(MG[1]);
+    CC = C1 * C2;
+    CC = CC * C3;
+    CR = matrix_matrix_to_list(CC);
+
+    return [RG, CR];
+}
+
+end$

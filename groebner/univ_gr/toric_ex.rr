@@ -1,0 +1,87 @@
+import("gr")$
+import("primdec")$
+import("katsura")$
+import("bfct")$
+import("names.rr")$
+import("oxrfc103.rr")$
+
+def intersection_J_Kx(JA) {
+    IA = [];
+    for(I = 0; I < length(JA); I++) {
+        T = vars(JA[I]);
+        TF = 1;
+        for(J = 0; J < length(T); J++) {
+            TEMP = util_index(T[J]);
+            if(TEMP[0] == "t") {
+                TF = 0;
+                break;
+            }
+        }
+
+        if(TF == 1) {
+           IA = append(IA, [JA[I]]);
+        }
+    }
+
+    return IA;
+}
+
+def make_J(A) {
+    
+    J = [];
+    for(I = 0; I < length(A[0]); I++) {
+        F = 0;
+        M = 1;
+        for(K = 0; K < length(A); K++) {
+            M *= util_v("t",[K])^(A[K][I]);
+        }
+        F = util_v("x",[I]) - M;
+        J = append(J, [F]);
+    }
+
+    return J;
+}
+
+def make_V(A) {
+    V = [];
+
+    for(I = length(A)-1; I >= 0; I--) {
+        V = append(V, [util_v("t",[I])]);
+    }
+    
+    for(I = length(A[0])-1; I >= 0; I--) {
+        V = append(V, [util_v("x",[I])]);
+    }
+
+    return V;
+}
+
+def calc_toric(A) {
+    V = make_V(A);
+    J = make_J(A);
+
+    JA = nd_gr(J, V, 0, 2);
+    IA = intersection_J_Kx(JA);
+
+    return IA;
+}
+
+A = [[0,1,2,3],
+    [1,1,1,1]];
+
+B = [[1,1,1,0,0,0],
+    [0,0,0,1,1,1],
+    [1,0,0,1,0,0],
+    [0,1,0,0,1,0],
+    [0,0,1,0,0,1]];
+
+/*
+J = [x1-t2, x2-t1*t2, x3-t1^2*t2, x4-t1^3*t2];
+V = [t2,t1,x4,x3,x2,x1];
+IA = nd_gr(J, V, 0, 2);
+*/
+
+IA = calc_toric(B);
+print(IA);
+
+end$

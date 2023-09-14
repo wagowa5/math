@@ -1,0 +1,88 @@
+def make_D(F, G) {
+    D = [];
+    for(I = length(F)-1; I >= 0; I--) {
+        DD = reduction2(F[I],G);
+        D = cons(DD[0], D);
+    }
+    
+    return D;
+}
+
+def make_Im(N) {
+    Im = [];
+    for(I = 0; I < N; I++) {
+        C = [];
+        for(J = 0; J < N; J++) {
+            if(I == J) {
+                C = append(C, [1]);
+            }
+            else {
+                C = append(C, [0]);
+            }
+        }
+        Im = append(Im, [C]);
+    }
+
+    return Im;
+}
+
+
+def syz_G(G) {
+    N = length(G);
+    Pairs = [];
+    
+    for ( I = N-1; I >= 0; I-- ) {
+        for ( J = N-1; J > I; J-- ) {
+            Pairs = cons([I,J],Pairs);
+        }
+    }
+
+    S = [];
+    while(Pairs != []) {
+        P = car(Pairs);
+        Pairs = cdr(Pairs);
+        
+        Sp = spolynomial(G[P[0]],G[P[1]]);
+        SS = [];
+
+        QQ = reduction2(Sp[0], G);
+        for(I = 0; I < N; I++) {
+            if(I == P[0]) {
+                SS = append(SS, [Sp[1][0] - QQ[0][P[0]]]);
+            }
+            else if(I == P[1]) {
+                SS = append(SS, [Sp[1][1] - QQ[0][P[1]]]);
+            }
+            else {
+                SS = append(SS, [(-1) * QQ[0][I]]);
+            }
+        }
+        S = append(S, [SS]);
+    }
+
+    return S;
+}
+
+def syz_F(F) {
+    G = buchberger(F);
+    RG = reduce(G[0], G[1]);
+
+    C = RG[1];
+    D = make_D(F, RG[0]);
+    Im = make_Im(length(F));
+    
+    S = syz_G(RG[0]);
+
+    T = matrix_list_to_matrix(D) * matrix_list_to_matrix(C);
+    R = matrix_list_to_matrix(Im) - T;
+
+    SCR = [];
+    for(I = 0; I < length(S); I++) {
+        SCR = append(SCR, [matrix_matrix_to_list(matrix_list_to_matrix(S[I]) * matrix_list_to_matrix(C))]);
+    }
+    SCR = append(SCR, matrix_matrix_to_list(R));
+
+    return SCR;
+}
+
+end$

@@ -1,0 +1,9 @@
+load("division.rr");
+load("buchberger.rr");
+load("syzygy.rr");
+
+F = [x^2+y^2-4,x*y-1];
+G = buchberger(F);
+RG = reduce(G);
+
+end$

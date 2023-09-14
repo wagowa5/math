@@ -1,0 +1,4 @@
+load("division.rr");
+load("buchberger.rr");
+load("syzygy.rr");
+end$

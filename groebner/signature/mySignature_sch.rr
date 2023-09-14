@@ -1,0 +1,96 @@
+extern MyVar;
+
+def spolySig(G, SyzG, ORD) {
+  
+  Pairs = [];
+  for(I = 0; I < length(G); I++) {
+    for(J = I+1; J < length(G); J++) {
+      Pairs = append(Pairs, [[G[I], G[J]]]);
+    }
+  }
+
+  Sigs = [];
+  for(I = 0; I < length(Pairs); I++) {
+    Spoly = spolynomial(Pairs[I][0], Pairs[I][1], ORD);
+    Spoly = Spoly[0];
+ 
+    if(Spoly != 0) {
+      SpSig = mySig(Spoly, G, SyzG, ORD);
+      Sigs = append(Sigs, [Pairs[I], SpSig]);
+    }
+    else {
+      Sigs = append(Sigs, [Pairs[I], 0]);
+    }
+  }
+
+  return Sigs;
+}
+
+def dispSigs(Sigs) {
+  for(I = 0; I < length(Sigs); I++) {
+    print(Sigs[I]);
+  }
+
+  return 0;
+}
+
+def mySig(P, G, SyzG, ORD) {
+  RepVec = calcRepVec(P, G, ORD);
+  
+  if(repVecCheck(RepVec, G, P) == 0) {
+    print("RepVec No!!!");
+  }
+
+  Sig = calcSig(RepVec, SyzG, ORD);
+
+  return Sig;
+}
+
+def calcSig(RepVec, SyzG, ORD) {
+ 
+  MinRep = reduction3(RepVec, SyzG, ORD);
+  Sig = pot(MinRep, ORD);
+  Sig = [dp_dtop(Sig[2][0], MyVar), Sig[2][1]];
+
+  return Sig;
+}
+
+def calcRepVec(F,G, ORD) {
+    Rem = 0;
+    
+    N = length(G);
+    QQ = newvect(N);
+
+    while(F) {
+        for(U = 0, L = G, I = 0; L != []; L = cdr(L)) {
+            Red = car(L);
+            Mono = is_reducible(F, Red, ORD);
+            //print(Mono);
+
+            if(Mono != 0) {
+                U = F-Mono*Red;
+                QQ[I] += Mono;
+                if(!U) {
+                    Q = matrix_matrix_to_list(QQ);
+                    //Q = vtol(QQ);
+                    return Q;
+                }
+                break;
+            }
+            I = I+1;
+        }
+        if(U) {
+            F = U;
+        }
+        else {
+            H = in(F, ORD);
+            Rem += H[0];
+            F -= H[0];
+        }
+    }
+    Q = matrix_matrix_to_list(QQ);
+    //Q = vtol(QQ);
+    return Q;
+}
+
+end$

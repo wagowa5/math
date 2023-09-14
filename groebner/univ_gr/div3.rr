@@ -1,0 +1,192 @@
+/* moduleのテストデータはsyzygyをつかえばよい */
+
+extern MyVar;
+MyVar = [x,y,z];
+
+
+def in(F) {
+    /*
+    for(I = 0; I < length(Var); I++) {
+        D = deg(F,Var[I]);
+        F = coef(F,D,Var[I]);
+        T = T*Var[I]^D;
+    }
+    */
+    D = deg(F,z);
+    F = coef(F,D,z);
+    T = z^D;
+    D = deg(F,y);
+    F = coef(F,D,y);
+    T = T*y^D;
+    D = deg(F,x);
+    F = coef(F,D,x);
+    T = T*x^D;
+    return [F*T,F,T];
+}
+
+def in2(F) {
+    D = deg(F,x);
+    F = coef(F,D,x);
+    T = x^D;
+    D = deg(F,y);
+    F = coef(F,D,y);
+    T = T*y^D;
+    D = deg(F,z);
+    F = coef(F,D,z);
+    T = T*z^D;
+    return [F*T,F,T];
+}
+
+def pot(F) {
+    N = length(F);
+    I = 0;
+    while(I < N) {
+        if(F[I] != 0) {
+            break;
+        }
+        I++;
+    }
+
+    G = F[I];
+    T = 1;
+    for(J = 0; J < length(MyVar); J++) {
+        D = deg(G,MyVar[J]);
+        G = coef(G,D,MyVar[J]);
+        T = T*MyVar[J]^D;
+    }
+    /*
+    D = deg(F[I],x);
+    F = coef(F[I],D,x);
+    T = x^D;
+    D = deg(F,y);
+    F = coef(F,D,y);
+    T = T*y^D;
+    D = deg(F,z);
+    F = coef(F,D,z);
+    T = T*z^D;
+    */
+
+    S = [];
+    for(J = 0; J < N; J++) {
+        if(J == I) {
+            S = append(S, [1]);
+        }
+        else {
+            S = append(S, [0]);
+        }
+    }
+
+    return [[G*T,S],[G,S],[T,S]];
+}
+
+def multi_degree(F) {
+    F = pot(F);
+    T = F[2];
+
+    return([[deg(T[0],x),T[1]], [deg(T[0],y), T[1]], [deg(T[0],z), T[1]], F[1]]);
+}
+
+def is_reducible(F,G) {
+    DF = multi_degree(F);
+    DG = multi_degree(G);
+
+    print(DF);
+    print(DG);
+
+    if(DF[0][1] != DG[0][1]) {
+        return [0];
+    }
+
+    if(DF[0][0] >= DG[0][0] && DF[1][0] >= DG[1][0] && DF[2][0] >= DG[2][0]) {
+        return [red(DF[3][0]/DG[3][0])*x^(DF[0][0]-DG[0][0])*y^(DF[1][0]-DG[1][0])*z^(DF[2][0]-DG[2][0]), DF[0][1]];
+    }
+    else {
+        return [0];
+    }
+}
+
+/*
+def division(F,G) {
+    Q = 0; R = F;
+    D = is_reducible(R, G);
+    while(type(D[0]) != 0) {
+        Q = Q+D[0];
+        R = R-D[0]*G;
+        D = is_reducible(R,G);
+    }
+
+    return [Q,R];
+}
+*/
+
+def reduction2(F,G) {
+    Rem = newvect(length(F));
+    
+    N = length(G);
+    
+    T = matrix_list_to_matrix(F);
+    Zero_vect = newvect(length(F));
+    //QQ = newvect(N);
+    while(T != Zero_vect) {
+        for(U = Zero_vect, L = G, I = 0; L != []; L = cdr(L)) {
+            Red = car(L);
+            TT = matrix_matrix_to_list(T);
+            Mono = is_reducible(TT, Red);
+            /*
+            print("TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT");
+            print(T);
+            print("MMMMMMMMMMMMMMMMMMMM");
+            print(Mono);
+            */
+            if(Mono != [0]) {
+                RR = matrix_list_to_matrix(Red);
+                /*
+                print("RRRRRRRRRRRRRRRRR");
+                print(RR);
+                */
+                for(JJ = 0; JJ < length(Red); JJ++) {
+                    RR[JJ] = RR[JJ]*Mono[0];
+                }
+                print(RR);
+                U = T-RR;
+                /*
+                print("UUUUUUUUUUUUUUUUUUUUU");
+                print(U);
+                */
+                //QQ[I] += Mono;
+                if(U == Zero_vect) {
+                    //Q = matrix_matrix_to_list([QQ]);
+                    //Q = vtol(QQ);
+                    //return [Q, Rem];
+                    return matrix_matrix_to_list(Rem);
+                }
+                break;
+            }
+            I = I+1;
+        }
+        if(U != Zero_vect) {
+            T = U;
+        }
+        else {
+            TT = matrix_matrix_to_list(T);
+            H = pot(TT);
+            HH = newvect(length(H[0][1]));
+            for(JJ = 0; JJ < length(H[0][1]); JJ++) {
+                HH[JJ] = H[0][0]*H[0][1][JJ];
+            }
+            //HH = matrix_list_to_matrix(H);
+            /*
+            print("HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH");
+            print(HH);
+            */
+            Rem += HH;
+            T -= HH;
+        }
+    }
+    // Q = matrix_matrix_to_list([QQ]);
+    //Q = vtol(QQ);
+    //return [Q, Rem];
+    return matrix_matrix_to_list(Rem);
+}
+
+end$

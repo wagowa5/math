@@ -1,0 +1,72 @@
+def check_gr(F, V, G) {
+    COR = nd_gr(F,V,0,2);
+
+    dp_ord(2);
+    R = 0;
+    for(I = 0; I < length(COR); I++) {
+        for(J = 0; J < length(G); J++) {
+            C = dp_ptod(COR[I], V);
+            D = dp_ptod(G[J], V);
+            if(dp_ht(C) == dp_ht(D)) {
+                R++;
+                break;
+            }
+        }
+    }
+
+    for(I = 0; I < length(G); I++) {
+        for(J = 0; J < length(COR); J++) {
+            C = dp_ptod(COR[I], V);
+            D = dp_ptod(G[J], V);
+            if(dp_ht(C) == dp_ht(D)) {
+                R++;
+                break;
+            }
+        }
+    }
+
+    if(R == 2*length(COR)) {
+        print("correct!");
+        return 1;
+    }
+
+    print("wrong");
+    return 0;
+}
+
+
+def check_syz(F, V, S) {
+    COR = newsyz.module_syz(F,V,0,2);
+
+    dp_ord(2);
+    R1 = 0;
+    for(I = 0; I < length(COR[0]); I++) {
+        for(II = 0; II < length(S); II++) {
+            R2 = 0;
+            for(J = 0; J < length(COR[0][I]); J++) {
+                for(JJ = 0; JJ < length(S[II]); JJ++) {
+                    C = dp_ptod(COR[0][I][J], V);
+                    D = dp_ptod(S[II][JJ], V);
+                    if(dp_ht(C) == dp_ht(D)) {
+                        R2++;
+                        break;
+                    }
+                }
+            }
+            if(R2 == length(COR[0][I])) {
+                R1++;
+                break;
+            }
+        }
+    }
+
+    if(R1 == length(COR[0])) {
+        print("syzygy!");
+        return 1;
+    }
+
+    print("wrong");
+    return 0;
+}
+
+end$

@@ -1,0 +1,247 @@
+//nd_gr([],[x,y],0,2);
+
+// 手計算でGMしてみる
+// 2変数くらいで手計算しておく
+// monomial ideal, 余分な元もいれておく
+// 3変数もやってみる
+// いまの例でsignature手計算してみる
+// signatureプログラム
+// GMとsignatureの比較
+
+extern MyVar;
+
+def fkij(Index, T) {
+  // Index = [k,i,j]
+  //print(Index);
+  //print(T);
+
+  DTk = dp_ptod(T[Index[0]], MyVar);
+  DTi = dp_ptod(T[Index[1]], MyVar);
+  DTj = dp_ptod(T[Index[2]], MyVar);
+  TkVec = dp_etov(DTk);
+  TiVec = dp_etov(DTi);
+  TjVec = dp_etov(DTj);
+
+  //print(TkVec);
+  //print(TiVec);
+  //print(TjVec);
+
+  Tij = 1;
+  for(J = 0; J < length(MyVar); J++) {
+    if(TiVec[J] > TjVec[J]) {
+      Tij = Tij * MyVar[J]^TiVec[J];
+    }
+    else {
+      Tij = Tij * MyVar[J]^TjVec[J];
+    }
+  }
+  //print(Tij);
+  
+  Tjk = 1;
+  for(J = 0; J < length(MyVar); J++) {
+    if(TjVec[J] > TkVec[J]) {
+      Tjk = Tjk * MyVar[J]^TjVec[J];
+    }
+    else {
+      Tjk = Tjk * MyVar[J]^TkVec[J];
+    }
+  }
+  //print(Tjk);
+
+
+  if((Index[0] < Index[1]) && (Tjk == Tij)) {
+    OutRes = "F" + rtostr(Index[0]) + "(" + rtostr(Index[1]) + ", " + rtostr(Index[2]) + ") : 1"; 
+    //print(OutRes);
+    return(1);
+  }
+  else {
+    OutRes = "F" + rtostr(Index[0]) + "(" + rtostr(Index[1]) + ", " + rtostr(Index[2]) + ") : 0";
+    //print(OutRes);
+    return(0);
+  }
+}
+
+//Tk, Tij, Tjk
+def mkij(Index, T) {
+  //Index = [k,i,j]
+  Tk = T[Index[0]];
+  
+  DTk = dp_ptod(T[Index[0]], MyVar);
+  DTi = dp_ptod(T[Index[1]], MyVar);
+  DTj = dp_ptod(T[Index[2]], MyVar);
+  TkVec = dp_etov(DTk);
+  TiVec = dp_etov(DTi);
+  TjVec = dp_etov(DTj);
+
+  //print(TkVec);
+  //print(TiVec);
+  //print(TjVec);
+
+  Tij = 1;
+  for(J = 0; J < length(MyVar); J++) {
+    if(TiVec[J] > TjVec[J]) {
+      Tij = Tij * MyVar[J]^TiVec[J];
+    }
+    else {
+      Tij = Tij * MyVar[J]^TjVec[J];
+    }
+  }
+  //print(Tij);
+  
+  Tjk = 1;
+  for(J = 0; J < length(MyVar); J++) {
+    if(TjVec[J] > TkVec[J]) {
+      Tjk = Tjk * MyVar[J]^TjVec[J];
+    }
+    else {
+      Tjk = Tjk * MyVar[J]^TkVec[J];
+    }
+  }
+  //print(Tjk);
+
+  DTij = dp_ptod(Tij, MyVar);
+  TijVec = dp_etov(DTij);
+
+  DivF = 1;
+  for(I = 0; I < length(MyVar); I++) {
+    if(TkVec[I] > TijVec[I]) {
+      DivF = 0;
+      break;
+    }
+  }
+
+  if((Index[0] < Index[2]) && (DivF == 1) && (Tjk != Tij)) {
+    OutRes = "M" + rtostr(Index[0]) + "(" + rtostr(Index[1]) + ", " + rtostr(Index[2]) + ") : 1"; 
+    //print(OutRes);
+    return 1;
+  }
+  else {
+    OutRes = "M" + rtostr(Index[0]) + "(" + rtostr(Index[1]) + ", " + rtostr(Index[2]) + ") : 0"; 
+    //print(OutRes);
+    return 0;
+  }
+}
+
+//Tk Tij Tik Tjk
+def bkij(Index, T) {
+  //Index = [k,i,j]
+  Tk = T[Index[0]];
+  
+  DTk = dp_ptod(T[Index[0]], MyVar);
+  DTi = dp_ptod(T[Index[1]], MyVar);
+  DTj = dp_ptod(T[Index[2]], MyVar);
+  TkVec = dp_etov(DTk);
+  TiVec = dp_etov(DTi);
+  TjVec = dp_etov(DTj);
+
+  //print(TkVec);
+  //print(TiVec);
+  //print(TjVec);
+
+  Tij = 1;
+  for(J = 0; J < length(MyVar); J++) {
+    if(TiVec[J] > TjVec[J]) {
+      Tij = Tij * MyVar[J]^TiVec[J];
+    }
+    else {
+      Tij = Tij * MyVar[J]^TjVec[J];
+    }
+  }
+  //print(Tij);
+  
+  Tjk = 1;
+  for(J = 0; J < length(MyVar); J++) {
+    if(TjVec[J] > TkVec[J]) {
+      Tjk = Tjk * MyVar[J]^TjVec[J];
+    }
+    else {
+      Tjk = Tjk * MyVar[J]^TkVec[J];
+    }
+  }
+  //print(Tjk);
+
+  DTij = dp_ptod(Tij, MyVar);
+  TijVec = dp_etov(DTij);
+
+  DivF = 1;
+  for(I = 0; I < length(MyVar); I++) {
+    if(TkVec[I] > TijVec[I]) {
+      DivF = 0;
+      break;
+    }
+  }
+
+  if((Index[0] > Index[2]) && (DivF == 1) && (Tik != Tij) && (Tjk != Tij)) {
+    OutRes = "B" + rtostr(Index[0]) + "(" + rtostr(Index[1]) + ", " + rtostr(Index[2]) + ") : 1"; 
+    //print(OutRes);
+    return 1;
+  }
+  else {
+    OutRes = "B" + rtostr(Index[0]) + "(" + rtostr(Index[1]) + ", " + rtostr(Index[2]) + ") : 0"; 
+    //print(OutRes);
+    return 0;
+  }
+}
+
+//T = [x^2+y^2-4, x*y-1, y^4-4*y^2+1, x+y^3-4*y];
+//T = [x^2,x*y,y^4,x];
+//T = [x^3, x^2*y, x*y^2, y^3];
+def myGM(T, ORD) {
+  Pairs = [];
+  for(I = 0; I < length(T)-1; I++) {
+    for(J = I+1; J < length(T); J++) {
+      Pairs = append(Pairs, [[I, J]]);
+    }
+  }
+
+  print(Pairs);
+
+  ResPair = [];
+  Iranai = [];
+  for(I = 0; I < length(Pairs); I++) {
+    PairFlag = 1;
+    for(K = 0; K < length(T); K++) {
+      Index = [K, Pairs[I][0], Pairs[I][1]];
+      F = fkij(Index, T);
+      M = mkij(Index, T);
+      B = bkij(Index, T);
+
+      if(F == 1 || M == 1 || B == 1) {
+        PairFlag = 0;
+        break;
+      }
+    }
+    if(PairFlag == 1) {
+      ResPair = append(ResPair, [Pairs[I]]);
+    }
+    else {
+      Iranai = append(Iranai, [ [T[Pairs[I][0]], T[Pairs[I][1] ] ] ]);
+    }
+  }
+  
+  Iru = [];
+  for(I = 0; I < length(ResPair); I++) {
+    Iru = append(Iru, [ [ T[ResPair[I][0]], T[ResPair[I][1]] ] ]);
+  }
+
+  //print(ResPair);
+  //print("habuku");
+  //print(Iranai);
+  return [Iru, Iranai];
+}
+
+def dispGM(Res) {
+
+  print("計算する");
+  for(I = 0; I < length(Res[0]); I++) {
+    print(Res[0][I]);
+  }
+  print("計算しない");
+  for(I = 0; I < length(Res[1]); I++) {
+    print(Res[1][I]);
+  }
+
+  return 0;
+}
+
+end$

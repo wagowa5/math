@@ -1,0 +1,56 @@
+extern MyVar;
+
+def mySchreyer(F, G, ORD) {
+
+  dp_ord(ORD);
+
+  DF = dp_ptod(F[0]*G[0], MyVar);
+  Max = dp_ht(DF);
+  for(I = 0; I < length(G); I++) {
+    DF = dp_ptod(F[I]*G[I], MyVar);
+    if(dp_ht( dp_ht(DF) + Max) != Max  ) {
+      Max = dp_ht(DF);
+    }
+  }
+
+  Index = [];
+  for(I = 0; I < length(G); I++) {
+    Index = cons(I, Index);
+  }
+
+  I0 = Index[length(Index)-1];
+  Head = dp_ht( dp_ptod(F[I0], MyVar) );
+  HeadC = dp_hc( dp_ptod(F[I0], MyVar) );
+  StVec = newvect(length(F));
+  StVec[I0] = 1;
+  StVecL = matrix_matrix_to_list(StVec);
+
+  CCC = scala_mul(Head*HeadC, StVecL);
+
+  return [[Head*HeadC,StVecL],[HeadC,StVecL],[Head,S],CCC];
+}
+
+def polyDecomp(F, ORD) {
+  
+  dp_ord(ORD);
+
+  DecompF = [];
+  for(I = 0; I < length(F); I++) {
+    
+    Fcopy = F[I];
+    StandardVec = newvect(length(F));
+    StandardVec[I] = 1;
+    StandardVecL = matrix_matrix_to_list(StandardVec);
+
+    while(Fcopy != 0) {
+      HeadDF = new_in(Fcopy, ORD);
+      DecompF = append(DecompF, [ [dp_dtop(HeadDF[0], MyVar), StandardVecL ] ] );
+      Fcopy = Fcopy - dp_dtop(HeadDF[0], MyVar);
+      
+    }
+  }
+
+  return DecompF;
+}
+
+end$

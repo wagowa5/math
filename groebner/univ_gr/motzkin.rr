@@ -1,0 +1,55 @@
+def fourier_motzkin(A, Z, K)
+{
+    Ak = [];
+    Zk = [];
+
+    for(I = 0; I < length(A); I++) {
+        if(A[I][K] == 0) {
+            Ak = append(Ak, [A[I]]);
+            Zk = append(Zk, [Z[I]]);
+        }
+        else if(A[I][K] > 0) {
+            for(J = 0; J < length(A); J++) {
+                if(A[J][K] < 0) {
+                    //print("aaaaaaaaaaaaaaaaa");
+                    //print(my_mul(A[I][K], A[J]));
+                    // , my_mul(-A[J][K], A[I]]);
+                    Ak = append(Ak, [ my_add(my_mul(A[I][K], A[J]) , my_mul(-A[J][K],A[I]) ) ] );
+                    Zk = append(Zk, [A[I][K]*Z[J] - A[J][K]*Z[I]]);
+                }
+            }
+        }
+    }
+
+    return [Ak,Zk];
+}
+
+def my_mul(C, V) {
+    R = [];
+    for(I = 0; I < length(V); I++) {
+        R = append(R, [C*V[I]]);
+    }
+
+    return R;
+}
+
+def my_add(V1, V2) {
+    R = [];
+    for(I = 0; I < length(V1); I++) {
+        R = append(R, [V1[I] + V2[I]]);
+    }
+
+    return R;
+}
+
+A = [[-1,-4], [-2,-1], [1,-2], [1,0], [2,1], [-2,6], [-6,-1]];
+Z = [-9, -4, 0, 4, 11, 17, -6];
+
+R0 = fourier_motzkin(A, Z, 0);
+print(R0);
+
+
+R1 = fourier_motzkin(A, Z, 1);
+print(R1);
+
+end$

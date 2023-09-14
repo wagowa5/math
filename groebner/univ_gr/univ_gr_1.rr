@@ -1,0 +1,235 @@
+import("names.rr")$
+import("noro_module_syz.rr");
+
+extern MyVar;
+MyVar = [x, y];
+
+def newton_poly(F, ORD) {
+    dp_ord(ORD);
+
+    DF = dp_ptod(F, MyVar);
+
+    New_pol = [];
+    while(DF != 0) {
+        T = dp_hm(DF);
+        New_pol = append([dp_etov(dp_ht(T))], New_pol);
+        DF = DF - T;
+    }
+
+    New_pol = reverse(New_pol);
+    print(New_pol);
+
+    return New_pol;
+}
+
+def make_ineq(New_pol) {
+    INEQ = [];
+    print(New_pol);
+    for(I = 0; I < length(New_pol); I++) {
+        for(J = I+1; J < length(New_pol); J++) {
+            INEQ1 = 0;
+            INEQ2 = 0;
+            for(K = 0; K < length(MyVar); K++) {
+                INEQ1 += New_pol[I][K]*MyVar[K];
+                INEQ2 += New_pol[J][K]*MyVar[K];
+            }
+
+            F = 1;
+            for(K = 0; K < length(INEQ); K++) {
+                if([INEQ2 - INEQ1, 0] == INEQ[K]) {
+                    F = 0;
+                    break;
+                }
+            }
+
+            // INEQ1 > INEQ2
+            if(F == 1) {
+                INEQ = append([[INEQ2 - INEQ1, 0]] , INEQ);
+            }
+        }
+    }
+
+    return(INEQ);
+}
+
+def calc_fan(GB, ORD) {
+    
+    INEQ = [];
+    for(I = 0; I < length(GB); I++) {
+        NP = newton_poly(GB[I], ORD);
+        INEQ = append(make_ineq(NP), INEQ);
+    }
+
+    INEQ2 = [];
+    for(I = 0; I < length(INEQ); I++) {
+        F = 1;
+        for(J = I+1; J < length(INEQ); J++) {
+            if(INEQ[I] == INEQ[J]) {
+                F = 0;
+                break;
+            }
+        }
+        if(F == 1) {
+            INEQ2 = append([INEQ[I]], INEQ2);
+        }
+    }
+
+    return INEQ2;
+}
+
+
+
+def fourier_motzkin(A, Z, K)
+{
+    Ak = [];
+    Zk = [];
+
+    for(I = 0; I < length(A); I++) {
+        if(A[I][K] == 0) {
+            Ak = append(Ak, [A[I]]);
+            Zk = append(Zk, [Z[I]]);
+        }
+        else if(A[I][K] > 0) {
+            for(J = 0; J < length(A); J++) {
+                if(A[J][K] < 0) {
+                    //print("aaaaaaaaaaaaaaaaa");
+                    //print(my_mul(A[I][K], A[J]));
+                    // , my_mul(-A[J][K], A[I]]);
+                    Ak = append(Ak, [ my_add(my_mul(A[I][K], A[J]) , my_mul(-A[J][K],A[I]) ) ] );
+                    Zk = append(Zk, [A[I][K]*Z[J] - A[J][K]*Z[I]]);
+                }
+            }
+        }
+    }
+
+    return [Ak,Zk];
+}
+
+def my_mul(C, V) {
+    R = [];
+    for(I = 0; I < length(V); I++) {
+        R = append(R, [C*V[I]]);
+    }
+
+    return R;
+}
+
+def my_add(V1, V2) {
+    R = [];
+    for(I = 0; I < length(V1); I++) {
+        R = append(R, [V1[I] + V2[I]]);
+    }
+
+    return R;
+}
+
+def poly2vec(F,ORD) {
+    V = [];
+    MyVar_VEC = [];
+    for(I = 0; I < length(MyVar); I++) {
+        R = [];
+        for(J = 0; J < length(MyVar); J++) {
+            if(I == J) {
+                R = append(R, [1]);
+            }
+            else {
+                R = append(R, [0]);
+            }
+        }
+        MyVar_VEC = append(MyVar_VEC, [R]);
+    }
+
+    dp_ord(ORD);
+    DF = dp_ptod(F, MyVar);
+
+    for(I = 0; I < length(MyVar); I++) {
+        if(matrix_matrix_to_list( dp_etov(dp_ht(DF)) ) == MyVar_VEC[I]) {
+            V = append(V, [dp_hc(DF)]);
+            DF = DF - dp_hm(DF);
+        }
+        else {
+            V = append(V, [0]);
+        }
+    }
+
+    return V;
+}
+
+def make_A(INEQ, ORD) {
+    A = [];
+    for(I = 0; I < length(INEQ); I++) {
+        T = poly2vec(INEQ[I][0], ORD);
+        //T = append([1], T);
+        A = append(A, [T] );
+    }
+
+    return A;
+}
+
+def make_Z(INEQ) {
+    Z = [];
+    for(I = 0; I < length(INEQ); I++) {
+        Z = append(Z, [INEQ[I][1]] );
+    }
+
+    return Z;
+}
+
+
+
+def test_weight(G, ORD) {
+    dp_ord(ORD);
+
+    Dp_G = [];
+    P = 0;
+    while(P != []) {
+        P = car(G);
+        G = cdr(G);
+        if(P != []) {
+            Dp_G = cons(dp_ptod(P, MyVar), Dp_G);
+        }
+    }
+
+    Dp_G = reverse(Dp_G);
+    print(Dp_G);
+
+    St = [];
+    for(I = 0; I < length(Dp_G); I++) {
+        T = dp_ht(Dp_G[I]);
+        print(T);
+        St = append([dp_etov(T)], St);
+    }
+
+    print(St);
+}
+
+F = [x^2+y^2-4,x*y-1];
+V = [x,y];
+
+M = newmat(2,2,[[0,1],[1,0]]);
+
+DegRevLex = nd_gr(F,V,0,0);
+DegLex = nd_gr(F,V,0,1);
+Lex = nd_gr(F,V,0,2);
+TEST = nd_gr(F,V,0,M);
+
+//NP = newton_poly(Lex[0], 2);
+//INEQ = make_ineq(NP);
+INEQ = calc_fan(Lex, 2);
+print(INEQ);
+
+A = make_A(INEQ, 2);
+Z = make_Z(INEQ);
+R1 = fourier_motzkin(A, Z, 0);
+R2 = fourier_motzkin(A, Z, 1);
+//R3 = fourier_motzkin(A, Z, 2);
+print(R1);
+print(R2);
+//print(R3);
+
+//test_weight(DegRevLex, 0);
+//test_weight(DegLex, 1);
+//test_weight(Lex, 2);
+//test_weight(TEST, M);
+
+end$

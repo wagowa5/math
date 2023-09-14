@@ -1,0 +1,6 @@
+extern MyVar;
+MyVar = [x,y,z];
+
+def in_w(F, W) {
+    
+}

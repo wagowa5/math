@@ -1,0 +1,110 @@
+def spair_check(G, ORD) {
+  ZeroVec = newvect(length(G[0]));
+  Zero_vect = matrix_matrix_to_list(ZeroVec);
+  //print(Zero_vect);
+
+  for(I = 0; I < length(G); I++) {
+    for(J = I+1; J < length(G); J++) {
+      Sp = spolynomial3(G[I],G[J],ORD);
+      print(Sp);
+      if(Sp == 0) {
+        Rem = Zero_vect;
+      } else {
+        Rem = reduction3(Sp,G,ORD);
+        print(Rem);
+      }
+
+      if ( Rem != Zero_vect ) {
+        print("damedame");
+        print(G[I]);
+        print(G[J]);
+        print(Rem);
+        return 0;
+      }
+
+    }
+  }
+
+  return 1;
+}
+
+def check_syz(Teacher, My) {
+  CNT = 0;
+  for (I = 0; I < length(Teacher); I++) {
+    FLAG = 1;
+    for (J = 0; J < length(My); J++) {
+      if(Teacher[I] == My[J]) {
+        FLAG = 0;
+        break;
+      } else {
+        if((-1)*matrix_list_to_matrix(Teacher[I]) == matrix_list_to_matrix(My[J])) {
+          FLAG = 0;
+          break;
+        }
+      }
+    }
+
+    if(FLAG == 1) {
+      CNT = CNT + 1;
+      //print(rtostr(Teacher[I]) + "is not in My");
+      print(rtostr(Teacher[I]));
+      print("amari");
+      print( reduction3(Teacher[I], My, 2) );
+      printf("\n");
+    }
+  }
+
+  print(CNT);
+  print("kaigyou");
+  CNT1 = CNT;
+
+  CNT = 0;
+  for (I = 0; I < length(My); I++) {
+    FLAG = 1;
+    for (J = 0; J < length(Teacher); J++) {
+      if(My[I] == Teacher[J]) {
+        FLAG = 0;
+        break;
+      } else {
+        if((-1)*matrix_list_to_matrix(My[I]) == matrix_list_to_matrix(Teacher[J])) {
+          FLAG = 0;
+          break;
+        }
+      }
+    }
+
+    if(FLAG == 1) {
+      CNT = CNT + 1;
+      //print(rtostr(My[I]) + "is not in Teacher");
+      print(rtostr(My[I]));
+      print("amari");
+      print(reduction3(My[I], Teacher, 2));
+      printf("\n");
+    }
+  }
+  print(CNT);
+
+  print(length(Teacher));
+  print(length(My));
+
+  return([CNT1, CNT]);
+}
+
+def repVecCheck(RepVec, G, F) {
+
+  C = 0;
+  for(I = 0; I < length(G); I++) {
+    C += RepVec[I]*G[I];
+  }
+
+  if(C == F) {
+    //print("RepVec OK");
+    return 1;
+  }
+
+  //print("RepVec No");
+  return 0;
+}
+
+
+end$

@@ -1,0 +1,227 @@
+extern MyVar;
+
+def regularCheck(G1, G2, G, SyzG, ORD) {
+  SpolyG1G2 = spolyCoef(G1, G2, ORD);
+
+  SigM1G1 = mySig(SpolyG1G2[1][0]*G1, G, SyzG, ORD);
+  SigM2G2 = mySig(SpolyG1G2[1][1]*G2, G, SyzG, ORD);
+
+  if(SigM1G1 == SigM2G2) {
+    return(0);
+  }
+
+  return(1);
+}
+
+def spolyCoef(F,G, ORD) {
+    DF = multi_degree(F, ORD);
+    DG = multi_degree(G, ORD);
+    
+    C1 = 1 / DF[length(MyVar)];
+    C2 = -1 / DG[length(MyVar)];
+    for(I = 0; I < length(MyVar); I++) {
+      M = DF[I]>DG[I]?DF[I]:DG[I];
+      C1 = C1 * MyVar[I]^(M - DF[I]);
+      C2 = C2 * MyVar[I]^(M - DG[I]);
+    }
+    //Mx = DF[0]>DG[0]?DF[0]:DG[0];
+    //My = DF[1]>DG[1]?DF[1]:DG[1];
+    //Mz = DF[2]>DG[2]?DF[2]:DG[2];
+    
+
+    //CC = [x^(Mx-DF[0])*y^(My-DF[1])*z^(Mz-DF[2])/DF[3], -x^(Mx-DG[0])*y^(My-DG[1])*z^(Mz-DG[2])/DG[3]];
+    CC = [C1, C2];
+
+    //return [x^(Mx-DF[0])*y^(My-DF[1])*z^(Mz-DF[2])*F/DF[3]-x^(Mx-DG[0])*y^(My-DG[1])*z^(Mz-DG[2])*G/DG[3], CC];
+    return [C1*F + C2*G , CC];
+}
+
+def spolySig(G, SyzG, ORD) {
+  
+  Pairs = [];
+  RVs = [];
+  N = length(G);
+  for(I = 0; I < length(G); I++) {
+    for(J = I+1; J < length(G); J++) {
+      Pairs = append(Pairs, [[G[I], G[J]]]);
+      RV = newvect(N);
+      RV[I] = 1;
+      RV[J] = 1;
+      RVs = append(RVs, [RV]);
+    }
+  }
+
+  print(Pairs);
+
+  Sigs = [];
+  print("Sigaaaaaaaaaaaaa");
+  for(I = 0; I < length(Pairs); I++) {
+    Spoly = spolyCoef(Pairs[I][0], Pairs[I][1], ORD);
+    print(Pairs[I]);
+    print(Spoly);
+    RV = RVs[I];
+    KK = 0;
+    for(JJJ = 0; JJJ < N; JJJ++) {
+      if(RV[JJJ] == 1) {
+        RV[JJJ] = Spoly[1][KK];
+        KK++;
+      }
+    }
+    RVV = matrix_matrix_to_list(RV);
+    SpSig1 = mySigSP(RVV, G, SyzG, ORD);
+    print(SpSig1);
+
+    if(regularCheck(Pairs[I][0], Pairs[I][1], G, SyzG, ORD) == 1) {
+      printf("regular : ");
+      print(Pairs[I]);
+      //if(Spoly[0] != 0) {
+      SpSig1 = mySig(Spoly[1][0]*Pairs[I][0], G, SyzG, ORD);
+      SpSig2 = mySig(Spoly[1][1]*Pairs[I][1], G, SyzG, ORD);
+
+      CompVec1 = matrix_list_to_matrix( scala_mul(SpSig1[0], SpSig1[1]) );
+      CompVec2 = matrix_list_to_matrix( scala_mul(SpSig2[0], SpSig2[1]) );
+      CompF = matrix_matrix_to_list(CompVec1 + CompVec2);
+      SpSig = pot(CompF, ORD);
+      SpSig = [dp_dtop(SpSig[2][0], MyVar), SpSig[2][1]];
+      printf("Signature(主成分) : ");
+      print(SpSig);
+      printf("\n");
+
+      Sigs = append(Sigs, [Pairs[I], SpSig]);
+      //}
+      //else {
+      //Sigs = append(Sigs, [Pairs[I], 0]);
+      //}
+    }
+    else {
+      printf("non-regular : ");
+      print(Pairs[I]);
+      printf("\n");
+      //SSSS = mySig(Spoly[0], 
+     // SpSig = pot(CompF, ORD);
+      //SpSig = [dp_dtop(SpSig[2][0], MyVar), SpSig[2][1]];
+
+    }
+  }
+
+  RRRR = dispSigRes(Sigs);
+  print(RRRR[0]);
+  print("いらない");
+  print(RRRR[1]);
+
+  return Sigs;
+}
+
+def dispSigs(Sigs) {
+  for(I = 0; I < length(Sigs); I++) {
+    print(Sigs[I]);
+  }
+
+  return 0;
+}
+
+def mySig(P, G, SyzG, ORD) {
+  RepVec = calcRepVec(P, G, ORD);
+
+  if(repVecCheck(RepVec, G, P) == 0) {
+    print("RepVec failed");
+  }
+  
+  Sig = calcSig(RepVec, SyzG, ORD);
+
+  return Sig;
+}
+
+def mySigSP(RV, G, SyzG, ORD) {
+  
+  Sig = calcSig(RV, SyzG, ORD);
+
+  return Sig;
+}
+
+def calcSig(RepVec, SyzG, ORD) {
+
+  MinRep = reduction3(RepVec, SyzG, ORD);
+  Sig = pot(MinRep, ORD);
+  Sig = [dp_dtop(Sig[2][0], MyVar), Sig[2][1]];
+
+  return Sig;
+}
+
+def calcRepVec(F,G, ORD) {
+  Rem = 0;
+
+  N = length(G);
+  QQ = newvect(N);
+
+  while(F) {
+    for(U = 0, L = G, I = 0; L != []; L = cdr(L)) {
+      Red = car(L);
+      Mono = is_reducible(F, Red, ORD);
+      //print(Mono);
+
+      if(Mono != 0) {
+        U = F-Mono*Red;
+        QQ[I] += Mono;
+        if(!U) {
+          Q = matrix_matrix_to_list(QQ);
+          //Q = vtol(QQ);
+          return Q;
+        }
+        break;
+      }
+      I = I+1;
+    }
+    if(U) {
+      F = U;
+    }
+    else {
+      H = in(F, ORD);
+      Rem += H[0];
+      F -= H[0];
+    }
+  }
+  Q = matrix_matrix_to_list(QQ);
+  //Q = vtol(QQ);
+  return Q;
+}
+
+def dispSigRes(Sigs) {
+
+  Iru = [];
+  Iranai = [];
+  for(I = 0; I < length(Sigs); I++) {
+    F = 0;
+    for(J = 0; J < length(Iru); J++) {
+      if(Sigs[I] == Iru[J]) {
+        F = 1;
+        break;
+      }
+    }
+
+    if(F == 1) {
+      Iranai = append(Iranai, [Sigs[I]]);
+    }
+    else {
+      Iru = append(Iru, [Sigs[I]]);
+    }
+  }
+
+  print("計算する");
+  for(I = 0; I < length(Iru); I++) {
+    print(Iru[I]);
+  }
+
+  print("計算しない");
+  for(I = 0; I < length(Iranai); I++) {
+    print(Iranai[I]);
+  }
+  if(length(Iranai) == 0) {
+    print("なし");
+  }
+
+  return [Iru, Iranai];
+}
+
+
+end$

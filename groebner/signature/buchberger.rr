@@ -1,0 +1,109 @@
+def spolynomial(F,G) {
+    DF = multi_degree(F);
+    DG = multi_degree(G);
+    Mx = DF[0]>DG[0]?DF[0]:DG[0];
+    My = DF[1]>DG[1]?DF[1]:DG[1];
+    Mz = DF[2]>DG[2]?DF[2]:DG[2];
+    
+    return x^(Mx-DF[0])*y^(My-DF[1])*z^(Mz-DF[2])*F/DF[3]-x^(Mx-DG[0])*y^(My-DG[1])*z^(Mz-DG[2])*G/DG[3];
+}
+
+def buchberger(F) {
+    N = length(F);
+    Pairs = [];
+    
+    for ( I = N-1; I >= 0; I-- ) {
+        for ( J = N-1; J > I; J-- ) {
+            Pairs = cons([I,J],Pairs);
+        }
+    }
+    
+    G = F;
+    while ( Pairs != [] ) {
+        P = car(Pairs);
+        Pairs = cdr(Pairs);
+        Sp = spolynomial(G[P[0]],G[P[1]]);
+        Rem = reduction(Sp,G);
+        if ( Rem ) {
+            G = append(G,[Rem]);
+            for ( I = 0; I < N; I++ ) {
+                Pairs = cons([I,N],Pairs);
+            }
+            N++;
+        }
+    }
+    
+    return G;
+}
+
+def minimal(G) {
+    N = length(G);
+    
+    MG = [];
+    for(I = 0; I < N; I++) {
+        GG = [];
+        for(J = 0; J < N; J++) {
+            if(I != J) {
+                PP = in2(G[J]);
+                GG = cons(PP[0], GG);
+            }
+        }
+
+        PP = in2(G[I]);
+        RR = reduction(PP[0],GG);
+        if(RR != 0) {
+            MG = cons(G[I], MG);
+        }
+    }
+
+    return MG;
+}
+
+def reduce(G) {
+    MG = minimal(G);
+    N = length(MG);
+
+    MG2 = [];
+    for(I = 0; I < N; I++) {
+        PPP = in2(MG[I]);
+        MG2 = cons(MG[I]/PPP[1], MG2);
+    }
+
+    RG = [];
+    for(I = 0; I < N; I++) {
+        PPP = MG2[I];
+        NEWP = 0;
+        
+        while(PPP != 0) {
+            INP = in2(PPP);
+            for(J = 0; J < N; J++) {
+                if(I == J) {
+                    J = J + 1;
+                }
+                if(J >= N) {
+                    break;
+                }
+
+                INQ = in2(MG2[J]);
+                JUDGE = is_reducible(INP[0],INQ[0]);
+                if(JUDGE != 0) {
+                    PPP = PPP - JUDGE*MG2[J];
+                    break;
+                }
+                else {
+                    if(J >= N-1 || (J >= N-2 && I >= N-1)) {
+                        NEWP = NEWP + INP[0];
+                        PPP = PPP - INP[0];
+                        break;
+                    }
+                }
+            }
+        }
+
+        RG = cons(NEWP, RG);
+    }
+
+    return(RG);
+}
+
+end$

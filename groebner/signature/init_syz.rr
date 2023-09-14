@@ -1,0 +1,194 @@
+// fとgのspolyの表現ベクトルを求める関数
+// イデアルの元の表現ベクトルを求める
+// ↑グレブナーで割り算した商
+
+// g in <G> -> Gで割り算すればOK
+// ↑にsploy入れて表現ベクトルを持ってくる
+
+/*
+
+signature が一致したら省いていいという証明を自力で.
+signature のデータをまとめる.
+データを自動的に再現できるようにプログラムをきちんと書く。毎度手作業で入力を変える書き方はよくない。
+
+assert 用のプログラム
+
+*/
+
+
+load("buch3.rr");
+load("div3.rr");
+load("division2.rr");
+load("buchberger2.rr");
+load("syzygy.rr");
+load("toric_ex.rr");
+load("mysyz.rr");
+load("my_check_syz.rr");
+//load("mySignature.rr");
+load("mySignatureSpoly.rr");
+load("GM.rr");
+
+load("noro_module_syz.rr");
+//import("noro_module_syz.rr");
+
+extern DebugPrint;
+DebugPrint = 0;
+
+extern MyVar;
+MyVar = [x_0, x_1, x_2, x_3, x_4, x_5, x_6, x_7];
+
+//MyVar = [x, y];
+
+//IF = [x^2+y^2-4,x*y - 1];
+//GG = buchberger(IF, 2);
+//G = mysyz(GG[0],2);
+
+/*
+P = (x^2*y+x)*IF[0] + (x+y)*IF[1];
+RepVec = calcRepVec(P, GG, 2);
+print("Rep");
+print(RepVec);
+
+print("check");
+repVecCheck(RepVec, GG, P);
+*/
+
+//Sigs = spolySig(GG[0], G, 2);
+//print(Sigs);
+//dispSigs(Sigs);
+
+//GB = buchberger3(IF, 2);
+
+
+print("\nmatrix matrix matrix");
+A = [[1,1,1,0,0,0],
+    [0,0,0,1,1,1],
+    [1,0,0,1,0,0],
+    [0,1,0,0,1,0],
+    [0,0,1,0,0,1]];
+
+A2 = [[1,1,1,0,0,0],[0,0,0,1,1,1],[0,1,0,0,1,0],[0,0,1,0,0,1]];
+
+A3 = [[1,1,1,1,0,0,0,0],
+    [0,0,0,0,1,1,1,1],
+    [0,1,0,0,0,1,0,0],
+    [0,0,1,0,0,0,1,0],
+    [0,0,0,1,0,0,0,1]];  
+
+D = [[0,1,2,3],
+    [1,1,1,1]];
+
+D2 = [[1,1,1,1],[0,1,3,4]];
+
+D3 = [[1,1,1,1],[0,1,4,5]];
+
+D4 = [[1,1,1,1],[0,1,4,5]];
+
+E = [[0,1,2,3,4],
+    [1,1,1,1,1]];
+
+//EE = [[1,2,3,4,5],
+//    [1,1,1,1,1]];
+
+//EE2 = [[1,2,3,4,5,0],
+//    [1,1,1,1,1,1]];
+
+F = [[4,0,0,2,1,1],
+    [0,4,0,1,2,1],
+    [0,0,4,1,1,2]];
+
+G1 = [[1,1,1,1,1], [0,1,0,1,2],[0,0,1,1,0]];
+
+
+print("AAAAAAAAAAAAAAAAAAAA");
+IF = calc_toric(E);
+
+//IF = [(x_0)^2,(x_0)*(x_1),(x_1)^2];
+
+//IF = [x_0+1,x_1+2,x_2^2+1];
+
+G_SYZA = mysyz(IF, 2);
+//G_SYZA = ggggg();
+//G_SYZA = [[x_1,-x_0,0],[0,x_1,-x_0],[-x_1^2,0,x_0^2]];
+
+Sigs = spolySig(IF, G_SYZA, 2);
+print(Sigs);
+//dispSigs(Sigs);
+
+GMs = myGM(IF, 2);
+dispGM(GMs);
+
+//SYZF = newsyz.module_syz(IF, MyVar, 0, 2);
+//print(SYZF[1]);
+//print(G_SYZA);
+//print(check_syz(SYZF[0], G_SYZA));
+
+//print("buch_check");
+//Check = spair_check(G_SYZA, 2);
+
+
+/*
+print("CCCCCCCCCCCCCCCCCCCCC");
+IC = calc_toric(C);
+print(IC);
+SYZC = syz_F(IC, 2);
+G_SYZC = buchberger3(SYZC, 2);
+*/
+
+/*
+print("DDDDDDDDDDDDDDDDDDDDDDDDD");
+ID = calc_toric(D);
+print(ID);
+SYZD = syz_F(ID, 2);
+G_SYZD = buchberger3(SYZD, 2);
+*/
+
+/*
+print("EEEEEEEEEEEEEEEEEEEEEEEEEE");
+IE = calc_toric(E);
+print(IE);
+SYZE = syz_F(IE, 2);
+G_SYZE = buchberger3(SYZE, 2);
+print("SYZZZZZZZZZZZZZ EEEEEEE");
+print(G_SYZE);
+*/
+
+/*
+print("E22222222222222222222222EEEEEEEEE");
+IEE = calc_toric(EE);
+print(IEE);
+SYZEE = syz_F(IEE, 2);
+G_SYZEE = buchberger3(SYZEE, 2);
+print("SYZZZZZZZZZZZZZ E22222222222222222222222EEEEEEEEE");
+print(G_SYZEE);
+*/
+
+//print("FFFFFFFFFFFFFFFFFFFFFFFFFFFF");
+//IF = calc_toric(F);
+//print(IF);
+//SYZF = newsyz.module_syz(IF, MyVar, 0, 2);
+//print(SYZF);
+//SYZF = syz_F(IF, 2);
+//G_SYZF = buchberger3(SYZF, 2);
+
+/*
+print("GGGGGGGGGGGGGGGGGGGGGGGG");
+IG = calc_toric(G);
+print(IG);
+SYZG = syz_F(IG, 2);
+G_SYZG = buchberger3(SYZG, 2);
+*/
+
+end$
+
+
+
+/***
+
+
+
+
+
+[[0,0,0,-x_2*x_0,0,-x_5*x_3,0,-x_4,0,0],[0,0,0,-x_5*x_0,x_4^2,0,-x_3,0,0,0],[0,0,0,-x_3*x_2,0,0,0,0,-x_5,-x_4^2],[0,0,0,0,x_2*x_1,-x_5*x_4,0,0,x_3,0],[0,0,0,-x_3^2,x_5*x_1,0,-x_4,0,0,0],[0,0,0,0,x_4*x_2,0,0,x_5,0,-x_3^2],[0,0,0,0,0,x_5^2,-x_2,0,0,x_4*x_3],[0,0,0,x_5*x_3,0,x_4^2,0,x_1,0,0],[0,0,0,0,-x_5*x_4,x_3^2,0,0,-x_0,0],[0,0,0,0,0,x_4*x_3,-x_5,0,0,x_1*x_0],[0,0,0,0,0,0,x_4*x_3*x_2-x_5^3,0,0,x_5^2*x_1*x_0-x_4^2*x_3^2],[0,0,0,0,-x_5^2,0,0,-x_3,0,x_4*x_0],[0,0,0,x_5^2,0,0,0,0,x_4,x_3*x_1],[1,0,0,0,x_3,x_0,0,0,0,0],[0,1,0,x_4,0,-x_1,0,0,0,0],[0,0,1,x_5*x_4*x_0,-x_4^3,-x_5*x_1*x_0,0,0,0,0],[0,0,0,0,0,0,-x_5^2*x_3,-x_4^2*x_3,x_5*x_4*x_0,(x_5*x_3*x_1+x_4^3)*x_0],[0,0,0,0,0,x_5*x_3^2,0,x_4*x_3,-x_5*x_0,-x_4^2*x_0],[0,0,0,0,0,0,-x_3^2*x_2,-x_5*x_4*x_3,x_5^2*x_0,x_5*x_4^2*x_0+x_4*x_3^3],[0,0,0,0,0,0,x_5*x_3*x_2,x_5^2*x_4,-x_4*x_2*x_0,-x_3*x_2*x_1*x_0-x_5*x_4*x_3^2],[0,0,0,0,0,0,-x_5^4,-x_5^2*x_4^2,x_4^2*x_2*x_0,(x_4*x_3*x_2+x_5^3)*x_1*x_0],[0,0,0,0,-x_4^2*x_3,-x_4^2*x_0,x_3^2,-x_1*x_0,0,0],[0,0,0,0,0,0,0,-x_5^6*x_1+x_5^2*x_4^4*x_2,-x_4^4*x_2^2*x_0+x_5^2*x_4^2*x_3^2*x_2,(-x_4^3*x_3*x_2^2-x_5^3*x_4^2*x_2)*x_1*x_0+(x_5^2*x_4*x_3^3*x_2+x_5^5*x_3^2)*x_1],[0,0,0,0,0,-x_4^2*x_2,0,-x_2*x_1,x_5^2,x_5*x_4^2],[0,0,0,0,0,0,-x_5*x_4*x_2,-x_3*x_2*x_1,x_5^2*x_3,x_4*x_2*x_1*x_0+x_5*x_4^2*x_3],[0,0,0,0,0,0,0,-x_3^2*x_2*x_1+x_5^2*x_4^2,-x_4^2*x_2*x_0+x_5^2*x_3^2,0],[0,0,0,0,0,0,0,0,-x_4*x_3*x_2+x_5^3,-x_3^2*x_2*x_1+x_5^2*x_4^2],[0,0,0,0,0,0,x_4^2*x_2,x_5^2*x_1,-x_5*x_4*x_3,-x_5*x_3^2*x_1-x_4^3*x_3],[0,0,0,0,0,0,0,x_5^3*x_3*x_1-x_5^2*x_4^3,x_4^3*x_2*x_0-x_5^2*x_4*x_3^2,x_4^2*x_3*x_2*x_1*x_0-x_5^2*x_3^3*x_1],[0,0,0,0,0,-x_5*x_4^2,0,-x_5*x_1,x_4*x_3,x_3^2*x_1],[0,0,0,0,0,0,0,-x_5*x_3^2*x_1+x_4^3*x_3,-x_5*x_4^2*x_0+x_4*x_3^3,-x_4^4*x_0+x_3^4*x_1],[0,0,0,0,0,0,-x_5^2*x_4,-x_5*x_3*x_1,x_4*x_3^2,x_5*x_4*x_1*x_0+x_3^3*x_1],[0,0,0,0,0,x_3^2*x_2,0,x_5^2,-x_2*x_0,-x_5*x_3^2],[0,0,0,0,0,0,0,x_4*x_3*x_2-x_5^3,0,-x_4^2*x_2*x_0+x_5^2*x_3^2]]
+
+*////

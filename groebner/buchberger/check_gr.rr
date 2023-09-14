@@ -1,0 +1,33 @@
+def check_gr(F, V, G) {
+    COR = nd_gr(F,V,0,2);
+
+    dp_ord(2);
+    R = 0;
+    for(I = 0; I < length(COR); I++) {
+        for(J = 0; J < length(G); J++) {
+            if(dp_ht(COR[I]) == dp_ht(G[J]))) {
+                R++;
+                break;
+            }
+        }
+    }
+
+    for(I = 0; I < length(G); I++) {
+        for(J = 0; J < length(COR); J++) {
+            if(dp_ht(G[I]) == dp_ht(COR[J]))) {
+                R++;
+                break;
+            }
+        }
+    }
+
+    if(R == 2*length(COR)) {
+        print("correct!")
+        return 1;
+    }
+
+    print("wrong");
+    return 0;
+}
+
+end$

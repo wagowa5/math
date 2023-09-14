@@ -1,0 +1,49 @@
+import("gr")$
+import("primdec")$
+import("katsura")$
+import("bfct")$
+import("names.rr")$
+import("oxrfc103.rr")$
+User_asirrc=which(getenv("HOME")+"/.asirrc")$
+//if (type(User_asirrc)!=0) {
+//   if (!ctrl("quiet_mode")) print("Loading ~/.asirrc")$
+//   load(User_asirrc)$
+//} else {
+//    end$
+//}
+
+import("noro_module_syz.rr");
+//load("toric.rr");
+//import("names.rr")$
+//import("noro_module_syz.rr");
+//import("toric.rr");
+
+Id = [x + y^2 - 1, x^2 + y - 1];
+VL = [x, y];
+
+W1 = [3,1];
+W2 = [1,1];
+W3 = [1,3];
+W4 = [2,1];
+W5 = [1,2];
+W6 = [0,0];
+
+G1 = poly_gr_w(Id, VL, W1);
+IN1 = map(poly_in_w, G1, VL, W1);
+
+G2 = poly_gr_w(Id, VL, W2);
+IN2 = map(poly_in_w, G2, VL, W2);
+
+G3 = poly_gr_w(Id, VL, W3);
+IN3 = map(poly_in_w, G3, VL, W3);
+
+G4 = poly_gr_w(Id, VL, W4);
+IN4 = map(poly_in_w, G4, VL, W4);
+
+G5 = poly_gr_w(Id, VL, W5);
+IN5 = map(poly_in_w, G5, VL, W5);
+
+G6 = poly_gr_w(Id, VL, W6);
+IN6 = map(poly_in_w, G6, VL, W6);
+
+end$

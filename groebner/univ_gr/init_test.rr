@@ -1,0 +1,51 @@
+/*
+load("gr")$
+load("primdec")$
+load("katsura")$
+load("bfct")$
+load("names.rr")$
+load("oxrfc103.rr")$
+User_asirrc=which(getenv("HOME")+"/.asirrc")$
+if (type(User_asirrc)!=0) {
+   if (!ctrl("quiet_mode")) print("Loading ~/.asirrc")$
+   load(User_asirrc)$
+else{ $
+    end$
+*/
+
+import("names.rr")$
+import("noro_module_syz.rr");
+
+
+
+F = [x^2*y+x,x+y];
+F = [3x+5y-36,x+y-10];
+G = [[-x*y+1,x^2+y^2-4],[x^2+y-3,x+y],[0,y]];
+G = [[x^2+y^2-4],[x*y-1]];
+
+load("div3.rr");
+load("buch3.rr");
+
+/*
+load("buchberger2.rr");
+load("syzygy.rr");
+load("my_check.rr");
+
+F = [x^2+y^2-4,x*y-1];
+SYZ_F = syz_F(F);
+*/
+/*
+G = buchberger(F);
+RG = reduce(G[0], G[1]);
+
+C = RG[1];
+D = make_D(F, RG[0]);
+
+Im = make_Im(length(F));
+S = syz_G(RG[0]);
+
+T = matrix_list_to_matrix(D) * matrix_list_to_matrix(C);
+R = matrix_list_to_matrix(Im) - T;
+*/
+
+end$

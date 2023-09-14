@@ -1,0 +1,19 @@
+extern MyVar;
+
+def mysyz(A, ORD) {
+  SYZA = syz_F(A, ORD);
+  G_SYZA = buchberger3(SYZA, ORD);
+  
+  return G_SYZA;
+}
+
+def my_tsyz(A, ORD) {
+  IA = calc_toric(A);
+  print(IA);
+
+  G_SYZA = mysyz(IA, ORD);
+  
+  return G_SYZA;
+}
+
+end$

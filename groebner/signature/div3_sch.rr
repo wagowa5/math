@@ -1,0 +1,184 @@
+/* FGLM(grlexとかのGroebnerをlexのgroebnerに変換) */
+
+extern MyVar;
+//MyVar = [x,y,z,a,b,c];
+
+def new_in(F, ORD) {
+    dp_ord(ORD);
+    G = dp_ptod(F, MyVar);
+    T = dp_ht(G);
+    //HT = dp_dtop(T, MyVar);
+    HC = dp_hc(G);
+    //HM = dp_hm(T);
+    //HM = dp_dtop(dp_hm(T), MyVar);
+    
+    return [T*HC, HC, T];
+}
+
+def new_in2(F, ORD, U, W) {
+  /*
+    new_in(F[I],ORD);
+    -> [U*a+W_I]
+
+   */
+}
+
+def pot(F,ORD) {
+    N = length(F);
+    I = 0;
+    while(I < N) {
+        if(F[I] != 0) {
+            break;
+        }
+        I++;
+    }
+
+    G = new_in(F[I], ORD);
+
+    S = [];
+    for(J = 0; J < N; J++) {
+        if(J == I) {
+            S = append(S, [1]);
+        }
+        else {
+            S = append(S, [0]);
+        }
+    }
+
+    CCC = scala_mul(G[0], S);
+
+    return [[G[0],S],[G[1],S],[G[2],S],CCC];
+}
+
+def multi_degree3(F, ORD) {
+    F = pot(F, ORD);
+    T = F[2]; // head monomial
+    TV = dp_etov(T[0]); // vector
+
+    R = [];
+    for(I = 0; I < length(TV); I++) {
+        R = append(R, [[TV[I],T[1]]]);
+    }
+    
+    // add coef
+    R = append(R, [F[1]]);
+
+    return(R);
+}
+
+def is_reducible3(F,G,ORD) {
+    DF = multi_degree3(F, ORD);
+    DG = multi_degree3(G, ORD);
+
+    // if monomial-order is pot
+    if(DF[0][1] != DG[0][1]) {
+        return [0];
+    }
+    // other order ...
+    /*
+
+    */
+
+    FLAG = 1;
+    RR = red(DF[length(DF)-1][0]/DG[length(DG)-1][0]);
+    for(I = 0; I < length(MyVar); I++) {
+        if(DF[I][0] >= DG[I][0]) {
+           RR *= MyVar[I] ^(DF[I][0]-DG[I][0]);
+        }
+        else {
+            FLAG = 0;
+            break;
+        }
+    }
+
+    if(FLAG == 1) {
+        // return with standard-basis
+        return([RR, DF[0][1]]);
+    }
+    else {
+        return [0];
+    }
+}
+
+def scala_mul(Mono, Vec) {
+    V = newvect(length(Vec));
+    for(I = 0; I < length(Vec); I++) {
+        V[I] = Mono*Vec[I];
+    }
+    VV = matrix_matrix_to_list(V);
+
+    return VV;
+}
+
+def reduction3(F,G,ORD) {
+    Rem = newvect(length(F));
+    N = length(G);
+    Quot = newvect(length(G));
+    
+    T = matrix_list_to_matrix(F);
+    Zero_vect = newvect(length(F));
+    
+    while(T != Zero_vect) {
+        for(U = Zero_vect, L = G, I = 0; L != []; L = cdr(L)) {
+            Red = car(L);
+            TT = matrix_matrix_to_list(T);
+            Mono = is_reducible3(TT, Red, ORD);
+
+            if(Mono != [0]) {
+                RR = matrix_list_to_matrix(Red);
+                Quot[I] = Quot[I] + Mono[0];
+                
+                for(JJ = 0; JJ < length(Red); JJ++) {
+                    RR[JJ] = RR[JJ]*Mono[0];
+                }
+                                
+                U = T-RR;
+
+                if(U == Zero_vect) {
+                    return matrix_matrix_to_list(Rem);
+                }
+                break;
+            }
+            I = I+1;
+        }
+
+        if(U != Zero_vect) {
+            T = U;
+        }
+        else {
+            TT = matrix_matrix_to_list(T);
+            H = pot(TT,ORD);
+            HH = newvect(length(H[0][1]));
+            
+            for(JJ = 0; JJ < length(H[0][1]); JJ++) {
+                HH[JJ] = H[0][0]*H[0][1][JJ];
+                //print(HH);
+            }
+
+            TEMP_Rem = newvect(length(Rem));
+            for(KK = 0; KK < length(TEMP_Rem); KK++) {
+                TEMP_Rem[KK] = dp_ptod(Rem[KK],MyVar);
+            }
+            TEMP_T = newvect(length(T));
+            for(KK = 0; KK < length(TEMP_Rem); KK++) {
+                TEMP_T[KK] = dp_ptod(T[KK],MyVar);
+            }
+            
+            TEMP_Rem += HH;
+            TEMP_T -= HH;
+
+            for(KK = 0; KK < length(Rem); KK++) {
+                Rem[KK] = dp_dtop(TEMP_Rem[KK],MyVar);
+            }
+            for(KK = 0; KK < length(TEMP_Rem); KK++) {
+                T[KK] = dp_dtop(TEMP_T[KK],MyVar);
+            }
+        }
+    }
+    
+    VQuot = matrix_matrix_to_list(Quot);
+
+    return matrix_matrix_to_list(Rem);
+}
+
+end$
