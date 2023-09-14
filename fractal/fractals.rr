@@ -1,0 +1,145 @@
+import("glib3.rr");
+
+/* calculate distance between point P and point Q */
+def dist(Px, Py, Qx, Qy) {
+	return((Px-Qx)^2 + (Py-Qy)^2);
+}
+
+/* calculate center of two points */
+def cent(A, B) {
+	return((A+B)/2);
+}
+
+/* rotation */
+def rot_vec(P, T) {
+	Q = [deval(P[0]*cos(T)-P[1]*sin(T)), deval(P[0]*sin(T)+P[1]*cos(T))];
+	return(Q);
+}
+
+/* translation */
+def sum_vec(P, Q) {
+	R = [P[0]+Q[0], P[1]+Q[1]];
+	return(R);
+}
+
+/* scala multiple */
+def scala_mul(P, S) {
+	Q = [S*P[0], S*P[1]];
+	return(Q);
+}
+
+/* calculate direction vector */
+def dire_vec(Pl, Ql) {
+	R = [Ql[0] - Pl[0], Ql[1] - Pl[1]];
+	return(R);
+}
+
+
+/* function drawing triangle */
+def triangle(Ax, Ay, Bx, By, Cx, Cy) {
+	glib_line(Ax, Ay, Bx, By);
+	glib_line(Bx, By, Cx, Cy);
+	glib_line(Cx, Cy, Ax, Ay);
+}
+
+
+/*------------------------------------*/
+/* function drawing fractal-triangle	*/
+/* input: (triangle's coordinate)			*/
+/* process: draw fractal-triangle			*/
+/*------------------------------------*/
+def fractal_tri(Px, Py, Qx, Qy, Rx, Ry) {
+	
+	/* draw triangle */
+	triangle(Px, Py, Qx, Qy, Rx, Ry);
+
+	/* end judge */
+	if(dist(Px, Py, Qx, Qy) < 0.01) {
+		;
+	}
+	else {
+		/* up triangle */
+		fractal_tri(Px, Py, cent(Px,Qx), cent(Py,Qy), cent(Rx,Px), cent(Ry,Py));
+		/* left triangle */
+		fractal_tri(cent(Px,Qx), cent(Py,Qy), Qx, Qy, cent(Rx,Qx), cent(Ry,Qy));
+		/* right triangle */
+		fractal_tri(cent(Px,Rx), cent(Py,Qy), cent(Rx,Qx), cent(Ry,Qy), Rx, Ry);
+	}
+}
+
+
+/*--------------------------------------------------------*/
+/* function drawing fractal-tree													*/
+/* input: (init branches' coordinate, theta of branches)	*/
+/* process: draw fractal-tree															*/
+/*--------------------------------------------------------*/
+def fractal_tree(P, Q, S, T) {
+
+	/* draw branch */
+	if(dist(P[0], P[1], Q[0], Q[1]) < 0.01) {
+		glib_line(P[0], P[1], Q[0], Q[1] | color = 0x50cf80);
+	}
+	else {
+		glib_line(P[0], P[1], Q[0], Q[1] | color = 0xcf8030);
+	}
+
+	/* set parameter for branch */
+	D = dire_vec(P, Q);	/* direction of old branch */
+	S = sum_vec(S, D);	/* start position of new branch */
+	
+	/* Right branch */
+	R = scala_mul(D, 2/3);	/* update length of new branch */
+	R = rot_vec(R, T);			/* rotate branch */
+	Right = sum_vec(S, R);	/* calculate new branch */
+	
+	/* Left branch (in the same right's way) */
+	L = scala_mul(D, 2/3);
+	L = rot_vec(L, -T);
+	Left = sum_vec(S, L);
+
+	/* end judge */
+	if(dist(P[0], P[1], Q[0], Q[1]) < 0.001) {
+		;
+	}
+	else {
+		/* right tree */
+		fractal_tree(Q, Right, S, T);
+		/* left tree */
+		fractal_tree(Q, Left, S, T);
+	}
+}
+
+
+
+/* from here, main (function ?) */
+
+/* initiallize window */
+Glib_math_coordinate=1;
+glib_window(-5,-1,12,7);
+glib_clear();
+
+
+/* set coordinate of tree */
+P = [0, 0];
+Q = [0, 2];
+S = [0, 0];
+Theta = deval(@pi/5);
+
+/* draw fractal-tree */
+fractal_tree(P, Q, S, Theta);
+
+
+/* set coordinate of triangle */
+Px = 8;
+Py = 6;
+Qx = deval(Px-2*3^(1/2));
+Qy = 0;
+Rx = deval(Px+2*3^(1/2));
+Ry = 0;
+
+/* draw fractal-triangle */
+fractal_tri(Px, Py, Qx, Qy, Rx, Ry);
+
+/* draw on window */
+glib_flush();
+

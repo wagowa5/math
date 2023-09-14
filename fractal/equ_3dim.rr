@@ -1,0 +1,139 @@
+#define EPS 0.001
+
+#define Ca 2.0
+#define Cb -5.0
+#define Cc -2.0
+#define Cd 0.0
+
+def func1(A) {
+	return(Ca*A^3.0 + Cb*A^2.0 + Cc*A + Cd);
+}
+
+def deriv_f1(A) {
+	return(3.0*Ca*A^2.0 + 2.0*Cb*A + Cc);
+}
+
+/* calculate discrminant */
+def discr(A, B, C) {
+	return(B^2 - 4*A*C);
+}
+
+/*------------------------------------------------------*/
+/* Proccess : calc approximate solution (newton-method)	*/
+/* input : start point of newton-method									*/
+/* output : [appro solution, converge or not-converge]	*/
+/*------------------------------------------------------*/
+def newton_method(A) {
+	C = A;
+	ERROR = 0;
+
+	do {
+		B = deval(C - func1(C)/deriv_f1(C));
+		if(deval(deriv_f1(B) * deriv_f1(C)) < 0) {
+			ERROR = 1;
+			break;
+		}
+		C = B;
+	} while(dabs(deval(func1(C))) > EPS);
+
+	return([deval(C), ERROR]);
+}
+
+/*----------------------------------------------*/
+/* Process : calculate 2-dim equation's solvent */
+/* input : (A, B, C) of equation Ax^2 + Bx + C 	*/
+/* output : [solve1, solve2, solve's num]				*/
+/*----------------------------------------------*/
+def solve_2dim(A, B, C) {
+	D = discr(A,B,C);
+	if(D > 0) {
+		return([deval((-B + D^(1/2))/(2*A)), deval((-B - D^(1/2))/(2*A)), 2]);
+	}
+	else if(D == 0) {
+		return([deval(-B/(2*A)), 0, 1]);
+	}
+	else {
+		return([0, 0, 0]);
+	}
+}
+
+/*------------------------------------------------------*/
+/* Process : calculate 3-dim equation's solvent 				*/
+/* input : (A, B, C, D) of equation Ax^3 + Bx^2 + Cx +D	*/
+/* output : [solve1, solve2, solve3, solve's num]				*/
+/*------------------------------------------------------*/
+def solve_3dim(A, B, C, D) {
+	/* calculate inflection point */
+	Inflec = solve_2dim(3*Ca, 2*Cb, Cc);
+	if(Inflec[2] == 0) {
+		return([0,0,0,0]);
+	}
+
+	/* set start point of newton-method */
+	St = [];
+	if(Inflec[2] == 1) {
+		St = append(St, [deval(Inflec[0]+5)]);
+	}
+	else {
+		St = append(St, [deval(Inflec[0]-5), deval((Inflec[0]+Inflec[1])/2), deval(Inflec[1]+5)]);
+	}
+
+	/* calculate real root of 3-dim equation */
+	Res = [];
+	for(I = 0; I < length(St); I++) {
+		Res = append(Res, [newton_method(St[I])]);
+	}
+
+	/* calculate final result */
+	Result = [];
+	for(I = 0; I < length(Res); I++) {
+		if(Res[I][1] == 0) {
+			Result = append(Result, [Res[I][0]]);
+		}
+	}
+
+	if(length(Result) == 1) {
+		Result = append(Result, [0,0,1]);
+	}
+	else if(length(Result) == 2) {
+		Result = append(Result, [0,2]);
+	}
+	else {
+		Result = append(Result, [3]);
+	}
+	
+	/*
+	Temp = [];
+	for(I = 0; I < length(Res); I++) {
+		if(Res[I][1] == 0) {
+			Temp = append(Temp, [Res[I][0]]);
+		}
+	}
+	
+	Result = [];
+	F = 0;
+	for(I = 0; I < length(Temp)-1; I++) {
+		Result = append(Result, [Temp[I]]);
+		if(dabs(deval(Temp[I]-Temp[I+1])) < 2*EPS) {
+			F++;
+			I++;
+		}
+	}
+	
+	for(; 0 < F; F--) {
+		Result = append(Result, [0]);
+	}
+	Result = append(Result, [length(Temp)]);
+	*/
+
+	return(Result);
+}
+
+S = solve_3dim(Ca, Cb, Cc, Cd);
+print(S);
+/*
+R = solve_2dim(3,0,-1);
+print(R);
+*/
+
+end$
