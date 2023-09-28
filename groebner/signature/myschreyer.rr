@@ -1,5 +1,6 @@
 extern MyVar;
 
+// シュライアー順序
 def mySchreyer(F, G, ORD) {
 
   dp_ord(ORD);
